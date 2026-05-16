@@ -188,31 +188,54 @@ def ttft_tpot_timeline() -> Path:
 
 def prefill_kernel_breakdown() -> Path:
     # Numbers from L4 profile (Blackwell shows the same shape).
+    # Blackwell torch.profiler at L=1024, bf16, single-user (parsed from
+    # results/profile/baseline_20260516_000526_L1024_seed42/profiler_out_0.txt
+    # and renormalized to 100% of accounted leaf-kernel GPU time).
     kernels = [
-        ("fused_moe_kernel",      80.0,  "#2E66C2"),
-        ("attention projections",  9.0,  "#5A8DDF"),
-        ("silu_and_mul",           3.0,  "#90B4ED"),
-        ("flash_attn",             2.0,  "#B7CFF3"),
-        ("other",                  6.0,  "#E2E5EA"),
+        ("fused_moe_kernel",       68.0,  "#2E66C2"),
+        ("attention projections",  18.0,  "#5A8DDF"),
+        ("MoE dispatch + combine",  5.0,  "#90B4ED"),
+        ("flash_attn",              5.0,  "#B7CFF3"),
+        ("other",                   4.0,  "#E2E5EA"),
     ]
 
-    fig, ax = plt.subplots(figsize=(11, 2.6))
+    fig, ax = plt.subplots(figsize=(11, 3.4))
     fig.patch.set_facecolor("white")
 
+    INLINE_THRESHOLD = 15.0  # only inline-label segments wider than this
+
     left = 0.0
+    callouts = []  # narrow segments → render labels above with leader lines
     for name, pct, color in kernels:
         ax.barh(0, pct, left=left, color=color, edgecolor="white", linewidth=1.2)
-        # label inside if wide enough
-        if pct >= 4:
-            ax.text(left + pct / 2, 0,
+        center = left + pct / 2
+        if pct >= INLINE_THRESHOLD:
+            ax.text(center, 0,
                     f"{name}\n{pct:.0f}%",
                     ha="center", va="center",
-                    fontsize=11, fontweight="bold",
-                    color="white" if name in ("fused_moe_kernel",) else INK)
+                    fontsize=12, fontweight="bold",
+                    color="white" if name == "fused_moe_kernel" else INK)
+        else:
+            callouts.append((center, name, pct, color))
         left += pct
 
+    # Render narrow-segment labels above the bar with short leader lines.
+    # Stagger horizontally to avoid overlap.
+    for i, (x_center, name, pct, color) in enumerate(callouts):
+        # alternate between two staggered y positions so labels don't collide
+        y_label = 0.85 + (0.30 if i % 2 else 0.0)
+        ax.annotate(
+            f"{name}  {pct:.0f}%",
+            xy=(x_center, 0.30),
+            xytext=(x_center, y_label),
+            ha="center", va="bottom",
+            fontsize=10, color=INK, fontweight="bold",
+            arrowprops=dict(arrowstyle="-", color=SUBTLE, lw=0.8,
+                            shrinkA=0, shrinkB=2),
+        )
+
     ax.set_xlim(0, 100)
-    ax.set_ylim(-0.7, 0.7)
+    ax.set_ylim(-0.7, 1.5)
     ax.set_yticks([])
     ax.set_xticks([0, 25, 50, 75, 100])
     ax.set_xticklabels(["0%", "25%", "50%", "75%", "100%"], color=SUBTLE)

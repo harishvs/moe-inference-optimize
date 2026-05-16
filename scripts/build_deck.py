@@ -397,23 +397,63 @@ def slide_profile(prs: Presentation) -> None:
     add_text(s, "TAKEAWAYS", left=8.3, top=1.85, width=4.6, height=0.3,
              pt=11, bold=True, color=ACCENT)
     add_bullets(s, [
-        "fused_moe_kernel — grouped-GEMM on tensor cores — owns ~80% of prefill",
-        "Decode is memory-bandwidth-bound on projection-weight loads",
-        "Hot path is already production-tuned in vLLM — no kernel headroom",
+        "fused_moe_kernel — the expert FFN matmuls, one fused kernel per layer (tensor cores) — owns ~68% of prefill",
+        "Attention projection GEMMs are second at ~18%",
+        "Hot path is already production-tuned in vLLM — no kernel headroom on the dominant paths",
         "Levers live above the kernels: quantization, caching, batching, parallelism",
     ], left=8.3, top=2.25, width=4.6, height=4.5, pt=14, line_gap_pt=6)
     add_footer(s, 6)
     set_notes(s,
-        "Walk the audience across the bar. fused_moe_kernel — the grouped-"
-        "GEMM kernel that runs the MoE feed-forward — owns 80% of prefill. "
-        "It's already tuned for tensor cores in vLLM. Attention projections "
-        "are next at 9%. Attention math itself is small; at L=1024 the FFN "
-        "term dominates the quadratic attention term by roughly 9×.\n\n"
+        "Walk the audience across the bar. Numbers are from torch.profiler "
+        "on Blackwell at L=1024, bf16, single-user (results/profile/"
+        "baseline_20260516_000526_L1024_seed42/), renormalized to 100% of "
+        "accounted leaf-kernel GPU time.\n\n"
+        "fused_moe_kernel — the grouped-GEMM kernel that runs the MoE "
+        "feed-forward — owns 68% of prefill. It's already tuned for tensor "
+        "cores; vLLM uses flashinfer's fused-MoE path on Blackwell. "
+        "Attention projection GEMMs (CUTLASS bf16) are second at 18%, "
+        "with attention math itself (flash_fwd_splitkv) at ~5% and MoE "
+        "expert dispatch/combine kernels at another ~5%. The router "
+        "(top-K softmax) is under 0.5% — basically noise.\n\n"
+        "Compared to L4: the relative shape is similar but Blackwell's "
+        "tensor cores chew through the MoE FFN faster, so its share "
+        "drops from L4's ~80% to ~68%, and attention projections rise "
+        "into the visible range. Same conclusion either way: the hot "
+        "path is FFN, FFN is already tuned, no kernel headroom for a "
+        "solo developer.\n\n"
         "The point: the profile tells the engineering budget where to go. "
         "It pointed at FP8 (attacks fused_moe via lower bytes), prefix "
         "caching (skips prefill entirely), batching (amortizes weight "
         "loads), and TP=2 (splits the work across both GPUs). Those are "
-        "the levers on the next slide."
+        "the levers on the next slide.\n\n"
+        "DECODE PROFILE (if asked) — different shape, same dominant "
+        "kernel. From the decode trace at I=1, O=128 "
+        "(results/profile/baseline_decode_20260516_000621_I1_O128_seed42/):\n\n"
+        "  fused_moe_kernel:               33%\n"
+        "  CUTLASS bf16 WMMA GEMMs:        14%   (attention QKV/O)\n"
+        "  flash_fwd_splitkv:               4%   (attention math)\n"
+        "  MoE dispatch/combine:            4%\n"
+        "  MoE router (top-K):              2%\n"
+        "  RMS norms:                       3%\n"
+        "  KV cache writes:                 1%\n"
+        "  Other (small ops, 128 steps):  ~40%\n\n"
+        "Why the FFN share drops from 68% → 33%: prefill processes 1024 "
+        "tokens through one fused MoE call, so the GEMM is large and "
+        "dominates. Decode does 128 separate forward passes, each on a "
+        "single token. The FFN kernel call shrinks relative to the per-"
+        "step overhead (router, dispatch, attention, cache write, norms) "
+        "that runs on every step regardless of token count.\n\n"
+        "Note the kernel naming: prefill uses cutlass_80_tensorop_bf16 "
+        "(standard tensor-core GEMM optimized for large batch shapes); "
+        "decode uses cutlass_80_wmma_tensorop_bf16 (WMMA variant, "
+        "optimized for the small batch=1 shapes decode produces). Same "
+        "CUTLASS family, different shape-specialization.\n\n"
+        "Implication for FP8: still helps decode (the 14% projection "
+        "GEMMs are bandwidth-bound on weight loads), and that's the "
+        "bigger fraction of decode latency than people expect because "
+        "the FFN kernel itself shrinks. This is consistent with the "
+        "TPOT measurements: FP8 cuts ~17%, which is roughly proportional "
+        "to the bandwidth-bound share of decode."
     )
 
 
