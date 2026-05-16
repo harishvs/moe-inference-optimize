@@ -1,0 +1,19 @@
+[project]
+name = "moe-inference-optimize"
+version = "0.1.0"
+description = "Profile and optimize OLMoE inference on a single L4 GPU under vLLM."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=3.0.2",
+    "torch>=2.11.0",
+    "transformers>=5.7.0",
+    "vllm>=0.20.0",
+    "python-pptx>=1.0.2",
+    "matplotlib>=3.10.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]

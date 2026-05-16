@@ -1,0 +1,671 @@
+{
+  "concurrency": 1,
+  "n_completed": 92,
+  "duration_s": 29.73087519299588,
+  "requests_per_s": 3.0944262287197564,
+  "output_tokens_per_s": 383.7088523612498,
+  "ttft_ms": {
+    "mean": 34.38763544577144,
+    "p50": 34.062584993080236,
+    "p90": 35.293594002723694,
+    "p99": 44.44832701119594
+  },
+  "tpot_ms": {
+    "mean": 2.3698713766735198,
+    "p50": 2.3530459645163915,
+    "p90": 2.4305188819384718,
+    "p99": 3.5597080233517686
+  },
+  "total_ms": {
+    "mean": 325.6056846091625,
+    "p50": 331.7365404946031,
+    "p90": 342.5844969751779,
+    "p99": 360.6216790212784
+  },
+  "raw": [
+    {
+      "label": "sharegpt_kO0lfTs_0_tok434",
+      "ttft_ms": 34.265640017110854,
+      "tpot_ms": 2.4869837085478097,
+      "total_ms": 350.11257100268267,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_IKbZEWU_0_tok231",
+      "ttft_ms": 35.136324004270136,
+      "tpot_ms": 2.411632740175293,
+      "total_ms": 341.4136820065323,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_SvEH1KA_0_tok448",
+      "ttft_ms": 44.44832701119594,
+      "tpot_ms": 2.489553952835295,
+      "total_ms": 360.6216790212784,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_KRyRq79_114_tok291",
+      "ttft_ms": 34.84289700281806,
+      "tpot_ms": 2.4321856457047075,
+      "total_ms": 343.73047400731593,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_FaR8mxt_14_tok306",
+      "ttft_ms": 34.04383300221525,
+      "tpot_ms": 2.4389054330146513,
+      "total_ms": 343.78482299507596,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_sCw8Ocq_0_tok137",
+      "ttft_ms": 34.0143840003293,
+      "tpot_ms": 2.3828458110160216,
+      "total_ms": 336.63580199936405,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_gg5r0Dy_0_tok316",
+      "ttft_ms": 34.36471102759242,
+      "tpot_ms": 2.4341599089140544,
+      "total_ms": 275.3465420100838,
+      "num_output_tokens": 100
+    },
+    {
+      "label": "sharegpt_N3aaMrp_0_tok282",
+      "ttft_ms": 34.32905301451683,
+      "tpot_ms": 2.4305188819384718,
+      "total_ms": 343.0049510207027,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_2CKVlKw_88_tok147",
+      "ttft_ms": 33.891433995449916,
+      "tpot_ms": 2.3848994568129633,
+      "total_ms": 336.7736650106963,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_U5yUTGQ_0_tok486",
+      "ttft_ms": 35.2573870040942,
+      "tpot_ms": 2.5053079921557884,
+      "total_ms": 353.4315020078793,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_nyw2ooH_8_tok253",
+      "ttft_ms": 34.249767020810395,
+      "tpot_ms": 2.4192395746546587,
+      "total_ms": 341.493193001952,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_J7GNwNh_0_tok215",
+      "ttft_ms": 33.93132402561605,
+      "tpot_ms": 2.4087577086587357,
+      "total_ms": 339.84355302527547,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_x5iwfyV_136_tok496",
+      "ttft_ms": 35.12607800075784,
+      "tpot_ms": 2.5037879841108843,
+      "total_ms": 353.10715198284015,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_7mH2NVL_20_tok158",
+      "ttft_ms": 33.57900702394545,
+      "tpot_ms": 2.3886181730832026,
+      "total_ms": 336.93351500551216,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_lHGV5FY_0_tok228",
+      "ttft_ms": 33.707711001625285,
+      "tpot_ms": 3.5597080233517686,
+      "total_ms": 339.8426010098774,
+      "num_output_tokens": 87
+    },
+    {
+      "label": "sharegpt_UmAxat5_0_tok128",
+      "ttft_ms": 36.263077025068924,
+      "tpot_ms": 2.298809519664597,
+      "total_ms": 328.21188602247275,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_YAhudFD_0_tok143",
+      "ttft_ms": 33.43105400563218,
+      "tpot_ms": 2.306545755732438,
+      "total_ms": 326.3623649836518,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_RSZbMp3_0_tok287",
+      "ttft_ms": 33.935390994884074,
+      "tpot_ms": 2.3419384250608015,
+      "total_ms": 331.3615709776059,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_PPA2N0Y_0_tok320",
+      "ttft_ms": 33.895694999955595,
+      "tpot_ms": 2.363401755697908,
+      "total_ms": 334.0477179735899,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_AarrEvv_0_tok171",
+      "ttft_ms": 33.58003598987125,
+      "tpot_ms": 2.3024123465444335,
+      "total_ms": 325.9864040010143,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_cOHDp2W_0_tok405",
+      "ttft_ms": 34.23172899056226,
+      "tpot_ms": 2.368110866038628,
+      "total_ms": 263.9384829963092,
+      "num_output_tokens": 98
+    },
+    {
+      "label": "sharegpt_wrN9uUo_152_tok332",
+      "ttft_ms": 33.73746501165442,
+      "tpot_ms": 2.320153169963073,
+      "total_ms": 142.78466399991885,
+      "num_output_tokens": 48
+    },
+    {
+      "label": "sharegpt_bfCz79A_0_tok412",
+      "ttft_ms": 34.191729995654896,
+      "tpot_ms": 2.3967812754906803,
+      "total_ms": 338.5829519829713,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_uBF3qC5_26_tok332",
+      "ttft_ms": 34.08863299409859,
+      "tpot_ms": 2.2339517454383895,
+      "total_ms": 43.02443997585215,
+      "num_output_tokens": 5
+    },
+    {
+      "label": "sharegpt_ElEI4w5_0_tok195",
+      "ttft_ms": 33.65718701388687,
+      "tpot_ms": 2.313785755907838,
+      "total_ms": 327.5079780141823,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_RuiQoQf_0_tok173",
+      "ttft_ms": 33.503896003821865,
+      "tpot_ms": 2.3121195432810686,
+      "total_ms": 327.14307800051756,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_BmBsQXa_0_tok341",
+      "ttft_ms": 34.01972999563441,
+      "tpot_ms": 2.368148811130352,
+      "total_ms": 334.7746290091891,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_aVExml0_0_tok136",
+      "ttft_ms": 35.97596401232295,
+      "tpot_ms": 2.294628739982154,
+      "total_ms": 327.3938139900565,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_41KFglo_0_tok309",
+      "ttft_ms": 34.127241000533104,
+      "tpot_ms": 2.3573481809626533,
+      "total_ms": 333.51045998279005,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_oma6cJq_0_tok210",
+      "ttft_ms": 35.65511599299498,
+      "tpot_ms": 2.323330133900369,
+      "total_ms": 330.71804299834184,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_Dcmfe9Z_14_tok503",
+      "ttft_ms": 35.293594002723694,
+      "tpot_ms": 2.419613409231923,
+      "total_ms": 342.5844969751779,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_p9YeQDX_12_tok265",
+      "ttft_ms": 34.1949780122377,
+      "tpot_ms": 2.3378741732197192,
+      "total_ms": 331.104998011142,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_Vk6SebH_0_tok158",
+      "ttft_ms": 33.62862198264338,
+      "tpot_ms": 2.290816200323976,
+      "total_ms": 182.53167500370182,
+      "num_output_tokens": 66
+    },
+    {
+      "label": "sharegpt_uYmbyTN_0_tok259",
+      "ttft_ms": 33.88471301877871,
+      "tpot_ms": 2.3378349291105702,
+      "total_ms": 330.78974901582114,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_eU9InRM_0_tok170",
+      "ttft_ms": 33.6595370026771,
+      "tpot_ms": 2.303247204816746,
+      "total_ms": 326.17193201440386,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_bMq2uNp_0_tok438",
+      "ttft_ms": 34.668698004679754,
+      "tpot_ms": 2.3955200236441025,
+      "total_ms": 338.89974100748077,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_Jn8Dlmd_0_tok198",
+      "ttft_ms": 33.78136799437925,
+      "tpot_ms": 2.3106322520665503,
+      "total_ms": 327.2316640068311,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_yRr7Soa_4_tok418",
+      "ttft_ms": 34.392517991364,
+      "tpot_ms": 2.389620897666309,
+      "total_ms": 337.87437199498527,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_LFxue7A_0_tok252",
+      "ttft_ms": 34.07074598362669,
+      "tpot_ms": 2.330986291351618,
+      "total_ms": 330.1060049852822,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_I5LDDow_38_tok481",
+      "ttft_ms": 37.399536988232285,
+      "tpot_ms": 2.4139755196946373,
+      "total_ms": 343.9744279894512,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_8Qg67GW_0_tok180",
+      "ttft_ms": 33.80097998888232,
+      "tpot_ms": 2.306568850423979,
+      "total_ms": 326.7352239927277,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_pHqpYzv_0_tok235",
+      "ttft_ms": 33.83517899783328,
+      "tpot_ms": 2.339092795287926,
+      "total_ms": 330.8999639993999,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_5hdCHod_0_tok383",
+      "ttft_ms": 34.15171799133532,
+      "tpot_ms": 2.371839952781635,
+      "total_ms": 335.375391994603,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_ef49DTP_0_tok277",
+      "ttft_ms": 34.0028969803825,
+      "tpot_ms": 2.3437550316168743,
+      "total_ms": 331.65978599572554,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_E9P1FYW_0_tok181",
+      "ttft_ms": 33.498285978566855,
+      "tpot_ms": 2.3107542993233166,
+      "total_ms": 326.96408199262805,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_CV4yC4k_0_tok232",
+      "ttft_ms": 33.853294007712975,
+      "tpot_ms": 2.324158338624544,
+      "total_ms": 329.02140301303007,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_7FjAypX_0_tok228",
+      "ttft_ms": 33.72439101804048,
+      "tpot_ms": 2.3274936611987798,
+      "total_ms": 329.3160859902855,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_sllVxyh_0_tok335",
+      "ttft_ms": 34.05442400253378,
+      "tpot_ms": 2.361840464671575,
+      "total_ms": 334.0081630158238,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_vf6i6bZ_0_tok346",
+      "ttft_ms": 34.17526098201051,
+      "tpot_ms": 2.368238220618319,
+      "total_ms": 334.94151500053704,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_nxFiGCg_0_tok450",
+      "ttft_ms": 35.04545698524453,
+      "tpot_ms": 2.487471731799859,
+      "total_ms": 341.0044799966272,
+      "num_output_tokens": 124
+    },
+    {
+      "label": "sharegpt_cNoNdWc_0_tok510",
+      "ttft_ms": 36.00998400361277,
+      "tpot_ms": 2.4211984645670617,
+      "total_ms": 343.5021890036296,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_LtvOSOA_30_tok377",
+      "ttft_ms": 36.72619699500501,
+      "tpot_ms": 2.3922518346693336,
+      "total_ms": 340.5421799980104,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_KAzbSwz_0_tok132",
+      "ttft_ms": 33.49316900130361,
+      "tpot_ms": 2.291202322876917,
+      "total_ms": 324.47586400667205,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_TgWpRlw_0_tok367",
+      "ttft_ms": 34.08779500750825,
+      "tpot_ms": 2.388398228332356,
+      "total_ms": 337.4143700057175,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_4ZnM6wG_0_tok428",
+      "ttft_ms": 34.35466799419373,
+      "tpot_ms": 2.392145511960083,
+      "total_ms": 338.15714801312424,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_e6bkaQx_0_tok158",
+      "ttft_ms": 33.48369398736395,
+      "tpot_ms": 2.302988850342946,
+      "total_ms": 325.96327798091806,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_mX6BiTN_332_tok465",
+      "ttft_ms": 34.345157007919624,
+      "tpot_ms": 2.41172480315344,
+      "total_ms": 340.6342070084065,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_fAxqysI_0_tok170",
+      "ttft_ms": 33.41796397580765,
+      "tpot_ms": 2.307491338725649,
+      "total_ms": 326.4693639939651,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_va3CQAo_0_tok153",
+      "ttft_ms": 33.620175992837176,
+      "tpot_ms": 2.3046086613807506,
+      "total_ms": 326.3054759881925,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_d5A3v8x_0_tok129",
+      "ttft_ms": 33.34875899599865,
+      "tpot_ms": 2.289354370120458,
+      "total_ms": 324.09676400129683,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_w3Rk5wv_0_tok396",
+      "ttft_ms": 34.02917800121941,
+      "tpot_ms": 2.378791960700613,
+      "total_ms": 336.13575701019727,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_qcDKraa_0_tok344",
+      "ttft_ms": 33.890366001287475,
+      "tpot_ms": 2.3595155590290835,
+      "total_ms": 333.54884199798107,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_xWFSwBT_10_tok270",
+      "ttft_ms": 34.07988598337397,
+      "tpot_ms": 2.335863315095157,
+      "total_ms": 330.7345270004589,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_qyQmRMR_0_tok349",
+      "ttft_ms": 36.57763099181466,
+      "tpot_ms": 2.370575700719716,
+      "total_ms": 337.6407449832186,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_hhJOZpd_0_tok427",
+      "ttft_ms": 34.44919700268656,
+      "tpot_ms": 2.391996165310348,
+      "total_ms": 338.23270999710076,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_kawyXkh_8_tok506",
+      "ttft_ms": 34.95593200204894,
+      "tpot_ms": 2.4190238032097686,
+      "total_ms": 342.17195500968955,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_ktDjebi_0_tok343",
+      "ttft_ms": 34.037766978144646,
+      "tpot_ms": 2.3601451576100736,
+      "total_ms": 333.776201994624,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_UOkWLrO_0_tok143",
+      "ttft_ms": 33.3226140064653,
+      "tpot_ms": 2.2942239134920777,
+      "total_ms": 324.68905101995915,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_G6dlrTX_0_tok156",
+      "ttft_ms": 33.47435098839924,
+      "tpot_ms": 2.294640031580879,
+      "total_ms": 324.8936349991709,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_3Tg8czB_0_tok188",
+      "ttft_ms": 34.92601399193518,
+      "tpot_ms": 2.3128250868180693,
+      "total_ms": 328.65480001783,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_rUU3d4C_0_tok205",
+      "ttft_ms": 34.375632007140666,
+      "tpot_ms": 2.323244598430149,
+      "total_ms": 329.42769600776955,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_eyU2ZUi_0_tok189",
+      "ttft_ms": 33.87089501484297,
+      "tpot_ms": 2.309705306983032,
+      "total_ms": 327.20346900168806,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_XdrvnbF_60_tok320",
+      "ttft_ms": 34.13958300370723,
+      "tpot_ms": 2.3666635590172778,
+      "total_ms": 334.7058549989015,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_E0YL5SX_0_tok180",
+      "ttft_ms": 33.7123170029372,
+      "tpot_ms": 2.3069855512768824,
+      "total_ms": 326.69948201510124,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_94NllJa_0_tok301",
+      "ttft_ms": 34.328430017922074,
+      "tpot_ms": 2.361149464570734,
+      "total_ms": 334.1944120184053,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_1LZF6eB_0_tok302",
+      "ttft_ms": 37.02873099246062,
+      "tpot_ms": 2.3487437480701296,
+      "total_ms": 335.31918699736707,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_EdFFywj_0_tok172",
+      "ttft_ms": 33.80771799129434,
+      "tpot_ms": 2.296809464561071,
+      "total_ms": 325.50251999055035,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_HJlveB4_0_tok354",
+      "ttft_ms": 34.10844999598339,
+      "tpot_ms": 2.3705475355450827,
+      "total_ms": 335.1679870102089,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_T2wNcTe_132_tok219",
+      "ttft_ms": 34.01617499184795,
+      "tpot_ms": 2.321444425225903,
+      "total_ms": 328.83961699553765,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_QgBpzub_36_tok381",
+      "ttft_ms": 34.208842989755794,
+      "tpot_ms": 2.3852876929738596,
+      "total_ms": 337.14037999743596,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_d2JIahJ_0_tok176",
+      "ttft_ms": 33.934189996216446,
+      "tpot_ms": 2.3108848976063006,
+      "total_ms": 327.41657199221663,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_VVbPcxy_0_tok134",
+      "ttft_ms": 33.68422100902535,
+      "tpot_ms": 2.2882952125226037,
+      "total_ms": 324.297712999396,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_KrorEiL_0_tok290",
+      "ttft_ms": 34.157663001678884,
+      "tpot_ms": 2.341419267724818,
+      "total_ms": 331.5179100027308,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_JWg4K4M_0_tok171",
+      "ttft_ms": 33.533942012581974,
+      "tpot_ms": 2.311628346247085,
+      "total_ms": 327.1107419859618,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_50UIaVi_0_tok177",
+      "ttft_ms": 33.7764700234402,
+      "tpot_ms": 2.3104740470816476,
+      "total_ms": 327.20667400280945,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_zJcTi58_0_tok132",
+      "ttft_ms": 33.35237398277968,
+      "tpot_ms": 2.293630511826271,
+      "total_ms": 324.6434489847161,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_ZQqndRd_42_tok467",
+      "ttft_ms": 35.2324029954616,
+      "tpot_ms": 2.4052851732112615,
+      "total_ms": 340.7036199932918,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_MLx0vwF_0_tok135",
+      "ttft_ms": 33.6541699944064,
+      "tpot_ms": 2.29566220485598,
+      "total_ms": 325.2032700111158,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_mihCCBa_0_tok324",
+      "ttft_ms": 35.071502992650494,
+      "tpot_ms": 2.3596124252850763,
+      "total_ms": 334.74228100385517,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_IfNVbkG_0_tok192",
+      "ttft_ms": 33.72546500759199,
+      "tpot_ms": 2.3255243858021837,
+      "total_ms": 329.06706200446934,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_DPXkB7G_0_tok289",
+      "ttft_ms": 34.15325999958441,
+      "tpot_ms": 2.3437798031015453,
+      "total_ms": 331.81329499348067,
+      "num_output_tokens": 128
+    },
+    {
+      "label": "sharegpt_tSQOF1B_0_tok402",
+      "ttft_ms": 34.561507985927165,
+      "tpot_ms": 2.382518685107508,
+      "total_ms": 337.1413809945807,
+      "num_output_tokens": 128
+    }
+  ]
+}
