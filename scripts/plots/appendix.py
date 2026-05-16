@@ -159,7 +159,7 @@ def ttft_vs_length() -> Path:
     _style(ax,
            ylabel="TTFT mean (ms)",
            xlabel="input length (tokens)",
-           title="TTFT by approach — single user")
+           title="TTFT — baseline vs two levers (single user, batch=1)")
 
     fig.tight_layout()
     out = OUT / "appendix_ttft_vs_length.png"
@@ -205,7 +205,7 @@ def tpot_vs_length() -> Path:
     _style(ax,
            ylabel="TPOT mean (ms per token)",
            xlabel="input length (tokens)",
-           title="TPOT by approach — single user (batch=1)")
+           title="TPOT — baseline vs two levers (single user, batch=1)")
 
     fig.tight_layout()
     out = OUT / "appendix_tpot_vs_length.png"
@@ -275,6 +275,109 @@ def batching_pareto() -> Path:
     fig.savefig(out, dpi=200, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     return out
+
+
+def _sla_verdict_chart(metric: str, threshold: float, threshold_unit: str,
+                        out_name: str, title: str,
+                        ylabel: str, prefix_note: str) -> Path:
+    """Shared helper: one SLA verdict chart for a single metric (TTFT/TPOT/e2e).
+
+    metric: key in derive_tpot's per-L dict (e.g. 'ttft_p90_ms', 'tpot_mean_ms',
+            'end_to_end_mean_ms').
+    threshold: SLA value in ms.
+    """
+    bf = numbers.derive_tpot(numbers.latency_grid("baseline"))
+    fp = numbers.derive_tpot(numbers.latency_grid("fp8"))
+    tp = numbers.derive_tpot(numbers.latency_grid("baseline_tp2"))
+
+    Ls = sorted(bf.keys())
+    bf_y = [bf[L][metric] for L in Ls]
+    fp_y = [fp[L][metric] for L in Ls if L in fp]
+    tp_y = [tp[L][metric] for L in Ls if L in tp]
+
+    fig, ax = plt.subplots(figsize=(10, 4.6))
+    fig.patch.set_facecolor("white")
+
+    max_y = max(max(bf_y), max(fp_y), max(tp_y), threshold) * 1.20
+
+    # Shaded fail region
+    ax.axhspan(threshold, max_y, color="#FBE9E1", alpha=0.7, zorder=0)
+
+    # Threshold line
+    ax.axhline(threshold, color=WARN, linewidth=1.6, linestyle="--", zorder=1)
+    ax.text(Ls[-1], threshold + max_y * 0.015,
+            f"  SLA: {threshold_unit}  ",
+            ha="right", va="bottom",
+            fontsize=10, color=WARN, fontweight="bold")
+
+    # Three lever lines
+    ax.plot(Ls, bf_y, "-o", color=ACCENT, linewidth=2.4, markersize=8,
+            label="default (one GPU)", zorder=3)
+    ax.plot(Ls, fp_y, "-s", color=GREEN, linewidth=2.4, markersize=8,
+            label="FP8 (one GPU)", zorder=3)
+    ax.plot(Ls, tp_y, "-^", color=WARN, linewidth=2.4, markersize=8,
+            label="TP=2 (both GPUs)", zorder=3)
+
+    # Prefix caching annotation in clear whitespace
+    ax.text(0.02, 0.98, prefix_note,
+            transform=ax.transAxes,
+            ha="left", va="top",
+            fontsize=10, color=SUBTLE, style="italic",
+            bbox=dict(boxstyle="round,pad=0.4",
+                      facecolor="white", edgecolor=RULE, linewidth=1.0))
+
+    ax.set_xticks(Ls)
+    ax.set_xticklabels([str(L) for L in Ls], fontsize=11, color=INK)
+    ax.set_ylim(0, max_y)
+    ax.legend(loc="lower right", frameon=False, fontsize=11)
+    _style(ax,
+           ylabel=ylabel,
+           xlabel="input length (tokens)",
+           title=title)
+
+    fig.tight_layout()
+    out = OUT / out_name
+    fig.savefig(out, dpi=200, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    return out
+
+
+def sla_verdict_ttft() -> Path:
+    return _sla_verdict_chart(
+        metric="ttft_p90_ms",
+        threshold=15.0,
+        threshold_unit="TTFT < 15 ms (p90)",
+        out_name="appendix_sla_verdict_ttft.png",
+        title="SLA verdict — TTFT (p90)",
+        ylabel="TTFT p90 (ms)",
+        prefix_note=("+ prefix caching: −40% TTFT on shared prompts\n"
+                     "(measured separately, slide 11)"),
+    )
+
+
+def sla_verdict_tpot() -> Path:
+    return _sla_verdict_chart(
+        metric="tpot_mean_ms",
+        threshold=2.5,
+        threshold_unit="TPOT < 2.5 ms",
+        out_name="appendix_sla_verdict_tpot.png",
+        title="SLA verdict — TPOT (mean)",
+        ylabel="TPOT mean (ms per token)",
+        prefix_note="prefix caching only affects TTFT, not TPOT",
+    )
+
+
+def sla_verdict_e2e() -> Path:
+    return _sla_verdict_chart(
+        metric="end_to_end_mean_ms",
+        threshold=500.0,
+        threshold_unit="end-to-end < 500 ms (200-token response)",
+        out_name="appendix_sla_verdict_e2e.png",
+        title="SLA verdict — end-to-end",
+        ylabel="end-to-end latency, 200 tokens out (ms)",
+        prefix_note=("+ prefix caching: shaves up to 21 ms TTFT off long\n"
+                     "shared prompts, lowering e2e here too"),
+    )
 
 
 def sla_status() -> Path:
@@ -440,7 +543,9 @@ def main() -> None:
         ttft_vs_length(),
         tpot_vs_length(),
         batching_pareto(),
-        sla_status(),
+        sla_verdict_ttft(),
+        sla_verdict_tpot(),
+        sla_verdict_e2e(),
         prefix_caching(),
         flop_math(),
     ]
