@@ -277,6 +277,68 @@ def batching_pareto() -> Path:
     return out
 
 
+def sla_status() -> Path:
+    """SLA pass/fail under concurrent load: bf16 vs FP8, with thresholds."""
+    import json
+
+    def latest_summary(subdir):
+        files = sorted((REPO / "results" / "harness" / subdir).glob("summary_*.json"))
+        return json.loads(files[-1].read_text()) if files else {}
+
+    bf = latest_summary("batching_decode")
+    fp = latest_summary("batching_decode_fp8")
+    if not bf or not fp:
+        return OUT / "appendix_sla_status.png"
+
+    Bs = sorted(set(bf) & set(fp), key=int)
+    bf_ttft = [bf[b]["ttft_ms"]["p90"] for b in Bs]
+    fp_ttft = [fp[b]["ttft_ms"]["p90"] for b in Bs]
+    SLA = 500
+
+    fig, ax = plt.subplots(figsize=(10, 4.6))
+    fig.patch.set_facecolor("white")
+
+    xs = list(range(len(Bs)))
+    # Shaded fail region
+    ax.axhspan(SLA, max(max(bf_ttft), max(fp_ttft)) * 1.2,
+               color="#FBE9E1", alpha=0.7, zorder=0)
+
+    # SLA threshold line
+    ax.axhline(SLA, color=WARN, linewidth=1.6, linestyle="--", zorder=1)
+    ax.text(len(Bs) - 0.5, SLA + 30, f"  SLA: TTFT p90 < {SLA} ms",
+            ha="right", va="bottom",
+            fontsize=11, color=WARN, fontweight="bold")
+
+    # Lines
+    ax.plot(xs, bf_ttft, "-o", color=ACCENT, linewidth=2.4, markersize=10,
+            label="bf16 baseline")
+    ax.plot(xs, fp_ttft, "-s", color=GREEN, linewidth=2.4, markersize=10,
+            label="FP8")
+
+    # Pass/fail markers
+    for x, b in zip(xs, Bs):
+        for y, color in ((bf_ttft[x], ACCENT), (fp_ttft[x], GREEN)):
+            ax.text(x, y - SLA * 0.06,
+                    f"{y:.0f}",
+                    ha="center", va="top",
+                    fontsize=9, color=color, fontweight="bold")
+
+    ax.set_xticks(xs)
+    ax.set_xticklabels([str(b) for b in Bs], fontsize=11, color=INK)
+    ax.set_ylim(0, max(max(bf_ttft), max(fp_ttft)) * 1.15)
+    ax.legend(loc="upper left", frameon=False, fontsize=11)
+    _style(ax,
+           ylabel="TTFT p90 (ms)",
+           xlabel="batch size  (in-flight requests in one vLLM pod)",
+           title="SLA-passing ceiling: both lines fail past batch=32")
+
+    fig.tight_layout()
+    out = OUT / "appendix_sla_status.png"
+    fig.savefig(out, dpi=200, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    return out
+
+
 # ------------------------------------------------------------
 # Appendix 4: Prefix caching savings
 # ------------------------------------------------------------
@@ -378,6 +440,7 @@ def main() -> None:
         ttft_vs_length(),
         tpot_vs_length(),
         batching_pareto(),
+        sla_status(),
         prefix_caching(),
         flop_math(),
     ]
