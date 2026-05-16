@@ -537,6 +537,84 @@ def flop_math() -> Path:
     return out
 
 
+def verdict_combo_chart(combo_subdir: str, combo_label: str,
+                         out_name: str, title: str) -> Path:
+    """Bar chart: baseline vs combo end-to-end latency, with 500 ms SLA threshold.
+
+    Mirrors the table on the verdict slides — same x-axis (input length),
+    same SLA threshold, same color scheme (red where bars miss).
+    """
+    bf = numbers.derive_tpot(numbers.latency_grid("baseline"))
+    combo = numbers.reconciled_caching_combo(combo_subdir) or {}
+    if not bf or not combo:
+        return OUT / out_name
+
+    Ls = sorted(set(bf) & set(combo))
+    bf_y = [bf[L]["end_to_end_mean_ms"] for L in Ls]
+    cb_y = [combo[L]["end_to_end_mean_ms"] for L in Ls]
+    SLA = 500
+
+    # Wide-and-short aspect ratio to fit beneath the verdict table on the slide
+    fig, ax = plt.subplots(figsize=(11.5, 3.2))
+    fig.patch.set_facecolor("white")
+
+    max_y = max(max(bf_y), max(cb_y)) * 1.18
+
+    # Shaded fail region above threshold
+    ax.axhspan(SLA, max_y, color="#FBE9E1", alpha=0.7, zorder=0)
+
+    # Threshold line
+    ax.axhline(SLA, color=WARN, linewidth=1.6, linestyle="--", zorder=1)
+    ax.text(len(Ls) - 0.5, SLA + max_y * 0.015,
+            f"  SLA: end-to-end < {SLA} ms  ",
+            ha="right", va="bottom",
+            fontsize=10, color=WARN, fontweight="bold")
+
+    x = np.arange(len(Ls))
+    w = 0.36
+
+    # Color each bar individually based on pass/fail
+    bf_colors = [WARN if y >= SLA else SUBTLE for y in bf_y]
+    cb_colors = [WARN if y >= SLA else GREEN for y in cb_y]
+
+    bars1 = ax.bar(x - w / 2, bf_y, w, color=bf_colors, label="baseline",
+                   edgecolor="white", linewidth=1.0, zorder=2)
+    bars2 = ax.bar(x + w / 2, cb_y, w, color=cb_colors, label=combo_label,
+                   edgecolor="white", linewidth=1.0, zorder=2)
+
+    for bars in (bars1, bars2):
+        for rect in bars:
+            ax.text(rect.get_x() + rect.get_width() / 2,
+                    rect.get_height() + max_y * 0.012,
+                    f"{rect.get_height():.0f}",
+                    ha="center", va="bottom",
+                    fontsize=10, color=INK, fontweight="bold")
+
+    ax.set_xticks(x)
+    ax.set_xticklabels([str(L) for L in Ls], fontsize=11, color=INK)
+    ax.set_ylim(0, max_y)
+
+    # Custom legend with neutral swatches
+    from matplotlib.patches import Patch
+    legend_elements = [
+        Patch(facecolor=SUBTLE, label="baseline"),
+        Patch(facecolor=GREEN, label=combo_label),
+        Patch(facecolor=WARN, label="misses SLA"),
+    ]
+    ax.legend(handles=legend_elements, loc="upper left",
+              frameon=False, fontsize=10)
+    _style(ax,
+           ylabel="end-to-end latency, 200 tokens out (ms)",
+           xlabel="input length (tokens)",
+           title=title)
+
+    fig.tight_layout()
+    out = OUT / out_name
+    fig.savefig(out, dpi=200, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    return out
+
+
 def main() -> None:
     paths = [
         fp8_accuracy(),
@@ -548,6 +626,16 @@ def main() -> None:
         sla_verdict_e2e(),
         prefix_caching(),
         flop_math(),
+        verdict_combo_chart(
+            "prefix_caching_fp8", "FP8 + prefix caching",
+            "appendix_verdict_combo_fp8_caching.png",
+            "FP8 + prefix caching clears the SLA across the grid",
+        ),
+        verdict_combo_chart(
+            "prefix_caching_fp8_tp2", "FP8 + caching + TP=2",
+            "appendix_verdict_combo_all_on.png",
+            "Everything on — TP=2 trims a few more ms on top of FP8 + caching",
+        ),
     ]
     for p in paths:
         print(f"wrote {p}")

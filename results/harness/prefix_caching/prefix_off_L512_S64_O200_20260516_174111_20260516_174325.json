@@ -1,0 +1,245 @@
+{
+  "label": "prefix_off_L512_S64_O200_20260516_174111",
+  "engine": "vllm",
+  "model": "allenai/OLMoE-1B-7B-0924-Instruct",
+  "engine_args": [
+    "--dtype",
+    "bfloat16",
+    "--gpu-memory-utilization",
+    "0.85",
+    "--no-enable-prefix-caching"
+  ],
+  "n_iters": 30,
+  "warmup": 3,
+  "seed": 42,
+  "ttft_ms": {
+    "mean": 32.88454553112388,
+    "p50": 32.55582849669736,
+    "p90": 34.71407701727003,
+    "p99": 35.53404999547638
+  },
+  "tpot_ms": {
+    "mean": 2.4500131112388046,
+    "p50": 2.446769062858473,
+    "p90": 2.45982223107297,
+    "p99": 2.474635789005891
+  },
+  "total_ms": {
+    "mean": 520.437154667646,
+    "p50": 520.024461497087,
+    "p90": 522.1938010072336,
+    "p99": 527.9865720076486
+  },
+  "raw": [
+    {
+      "label": "L512_iter0",
+      "ttft_ms": 32.92520600371063,
+      "tpot_ms": 2.443036914512927,
+      "total_ms": 519.0895519917831,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter1",
+      "ttft_ms": 32.63422200689092,
+      "tpot_ms": 2.4457909699164366,
+      "total_ms": 519.3466250202619,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter2",
+      "ttft_ms": 32.78319098171778,
+      "tpot_ms": 2.452420467398499,
+      "total_ms": 520.8148639940191,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter3",
+      "ttft_ms": 32.575755001744255,
+      "tpot_ms": 2.4447281506783023,
+      "total_ms": 519.0766569867264,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter4",
+      "ttft_ms": 34.358571021584794,
+      "tpot_ms": 2.4443809697685306,
+      "total_ms": 520.7903840055224,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter5",
+      "ttft_ms": 32.53376699285582,
+      "tpot_ms": 2.4462714773747862,
+      "total_ms": 519.3417909904383,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter6",
+      "ttft_ms": 32.592409988865256,
+      "tpot_ms": 2.44499046745097,
+      "total_ms": 519.1455130116083,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter7",
+      "ttft_ms": 34.71407701727003,
+      "tpot_ms": 2.441841336616535,
+      "total_ms": 520.6405030039605,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter8",
+      "ttft_ms": 32.84791900659911,
+      "tpot_ms": 2.4404877436408148,
+      "total_ms": 518.5049799911212,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter9",
+      "ttft_ms": 32.804855989525095,
+      "tpot_ms": 2.4474863920608843,
+      "total_ms": 519.8546480096411,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter10",
+      "ttft_ms": 32.72300699609332,
+      "tpot_ms": 2.4508351307121297,
+      "total_ms": 520.4391980078071,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter11",
+      "ttft_ms": 32.66719201928936,
+      "tpot_ms": 2.449861753687506,
+      "total_ms": 520.189681003103,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter12",
+      "ttft_ms": 32.86546899471432,
+      "tpot_ms": 2.443267683464631,
+      "total_ms": 519.075738004176,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter13",
+      "ttft_ms": 32.720847986638546,
+      "tpot_ms": 2.46551836695728,
+      "total_ms": 523.3590030111372,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter14",
+      "ttft_ms": 32.46808398398571,
+      "tpot_ms": 2.4459628292052873,
+      "total_ms": 519.2146869958378,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter15",
+      "ttft_ms": 32.4861109838821,
+      "tpot_ms": 2.4491960351558952,
+      "total_ms": 519.8761219799053,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter16",
+      "ttft_ms": 35.29235100722872,
+      "tpot_ms": 2.446740954773894,
+      "total_ms": 522.1938010072336,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter17",
+      "ttft_ms": 32.39470499102026,
+      "tpot_ms": 2.4597255629194836,
+      "total_ms": 521.8800920119975,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter18",
+      "ttft_ms": 32.40198499406688,
+      "tpot_ms": 2.4457042614154836,
+      "total_ms": 519.0971330157481,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter19",
+      "ttft_ms": 32.40782400825992,
+      "tpot_ms": 2.446797170943052,
+      "total_ms": 519.3204610259272,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter20",
+      "ttft_ms": 32.3740649910178,
+      "tpot_ms": 2.45982223107297,
+      "total_ms": 521.8786889745388,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter21",
+      "ttft_ms": 32.398581999586895,
+      "tpot_ms": 2.4462210552078956,
+      "total_ms": 519.1965719859581,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter22",
+      "ttft_ms": 32.53590199165046,
+      "tpot_ms": 2.4432455176071044,
+      "total_ms": 518.7417599954642,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter23",
+      "ttft_ms": 32.413209992228076,
+      "tpot_ms": 2.454734281443724,
+      "total_ms": 520.9053319995292,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter24",
+      "ttft_ms": 32.316986995283514,
+      "tpot_ms": 2.4515367538642474,
+      "total_ms": 520.1728010142688,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter25",
+      "ttft_ms": 32.49904100084677,
+      "tpot_ms": 2.444176668337495,
+      "total_ms": 518.8901980000082,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter26",
+      "ttft_ms": 32.356268988223746,
+      "tpot_ms": 2.455124884391035,
+      "total_ms": 520.9261209820397,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter27",
+      "ttft_ms": 32.421562005765736,
+      "tpot_ms": 2.4568118441945885,
+      "total_ms": 521.3271190004889,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter28",
+      "ttft_ms": 35.53404999547638,
+      "tpot_ms": 2.474635789005891,
+      "total_ms": 527.9865720076486,
+      "num_output_tokens": 200
+    },
+    {
+      "label": "L512_iter29",
+      "ttft_ms": 32.48914799769409,
+      "tpot_ms": 2.459039673385861,
+      "total_ms": 521.8380430014804,
+      "num_output_tokens": 200
+    }
+  ]
+}

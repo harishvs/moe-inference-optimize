@@ -187,6 +187,56 @@ def eval_accuracy() -> Optional[dict]:
     return out or None
 
 
+def _newest_summary(subdir: str) -> Optional[dict]:
+    """Pick the harness summary with the latest mtime under results/harness/<subdir>."""
+    import os
+    candidates = list((RESULTS / "harness" / subdir).glob("summary_*.json"))
+    if not candidates:
+        return None
+    candidates.sort(key=os.path.getmtime)
+    return json.loads(candidates[-1].read_text())
+
+
+def reconciled_caching_combo(subdir: str) -> Optional[dict[int, dict]]:
+    """Return engine-only TTFT/TPOT/e2e for a prefix-caching combo.
+
+    The harness adds ~20 ms of overhead per request relative to the in-process
+    `vllm bench latency`. We reconcile per-L by subtracting (harness cache-off
+    bf16 − in-process cache-off bf16). Apply to the cache-on TTFT to get the
+    engine-only TTFT for that combo, then derive end-to-end as
+    TTFT + 199 × TPOT.
+    """
+    target = _newest_summary(subdir)
+    bf_harness = _newest_summary("prefix_caching")
+    if not target or not bf_harness:
+        return None
+    bf_inproc = derive_tpot(latency_grid("baseline"))
+    if not bf_inproc:
+        return None
+
+    # Per-L overhead from the bf16 harness vs in-process bench
+    overhead = {}
+    for L_str in bf_harness:
+        L = int(L_str)
+        if L in bf_inproc:
+            overhead[L] = bf_harness[L_str]["off_ttft_ms"]["mean"] - bf_inproc[L]["ttft_mean_ms"]
+
+    out: dict[int, dict] = {}
+    for L_str, s in target.items():
+        L = int(L_str)
+        if L not in overhead:
+            continue
+        ttft_engine = s["on_ttft_ms"]["mean"] - overhead[L]
+        tpot = s["on_tpot_ms"]["mean"]
+        e2e = ttft_engine + 199 * tpot
+        out[L] = {
+            "ttft_mean_ms": ttft_engine,
+            "tpot_mean_ms": tpot,
+            "end_to_end_mean_ms": e2e,
+        }
+    return out
+
+
 def latest_summary(subdir: str) -> Optional[dict]:
     """Load the most recent summary_<ts>.json under results/harness/<subdir>."""
     candidates = sorted((RESULTS / "harness" / subdir).glob("summary_*.json"))
@@ -196,18 +246,26 @@ def latest_summary(subdir: str) -> Optional[dict]:
 
 
 def prefix_caching_summary() -> Optional[dict]:
-    """{ P: {off_mean, on_mean, delta_pct} } for the latest prefix-caching run."""
+    """{ key: {off_mean, on_mean, savings_pct} } for the latest prefix-caching run.
+
+    The harness has gone through two formats:
+    - Older: keyed by prefix length P (with `delta_pct` field).
+    - Newer: keyed by total input length L (with `ttft_delta_pct` field).
+
+    This returns whichever the latest summary file has.
+    """
     raw = latest_summary("prefix_caching")
     if not raw:
         return None
-    return {
-        int(P): {
+    out = {}
+    for k, v in raw.items():
+        savings = v.get("delta_pct", v.get("ttft_delta_pct"))
+        out[int(k)] = {
             "off_mean_ms": v["off_ttft_ms"]["mean"],
             "on_mean_ms": v["on_ttft_ms"]["mean"],
-            "savings_pct": v["delta_pct"],  # source field is signed: positive = caching is faster
+            "savings_pct": savings,  # signed: positive = caching is faster
         }
-        for P, v in raw.items()
-    }
+    return out
 
 
 def batching_decode_summary() -> Optional[dict]:
