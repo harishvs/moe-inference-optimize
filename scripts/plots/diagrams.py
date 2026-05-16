@@ -231,11 +231,29 @@ def prefill_kernel_breakdown() -> Path:
     return out
 
 
+def repo_qr(url: str = "https://github.com/harishvs/olmoe-kernel") -> Path:
+    """Generate a QR code pointing at the repo, for the Q&A slide."""
+    import qrcode
+    qr = qrcode.QRCode(
+        version=None,
+        error_correction=qrcode.constants.ERROR_CORRECT_M,
+        box_size=14,
+        border=2,
+    )
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color=INK, back_color="white")
+    out = OUT / "repo_qr.png"
+    img.save(out)
+    return out
+
+
 def main() -> None:
     paths = [
         eks_topology(),
         ttft_tpot_timeline(),
         prefill_kernel_breakdown(),
+        repo_qr(),
     ]
     for p in paths:
         print(f"wrote {p}")

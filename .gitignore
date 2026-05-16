@@ -8,7 +8,6 @@ __pycache__/
 .claude/
 data/
 talk/aws_template.pptx
-talk/deck.pptx
 talk/substack.md
 scripts/plots/olmoe_arch.py
 scripts/build_deck.py
