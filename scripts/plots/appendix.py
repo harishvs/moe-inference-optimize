@@ -537,74 +537,78 @@ def flop_math() -> Path:
     return out
 
 
-def verdict_combo_chart(combo_subdir: str, combo_label: str,
-                         out_name: str, title: str) -> Path:
-    """Bar chart: baseline vs combo end-to-end latency, with 500 ms SLA threshold.
+_BAR_BASELINE = SUBTLE
+_BAR_FP8_PREFIX = GREEN
+_BAR_ALL_ON = "#5A8DDF"  # accent-light, distinct from green
 
-    Mirrors the table on the verdict slides — same x-axis (input length),
-    same SLA threshold, same color scheme (red where bars miss).
+
+def verdict_metric_chart(metric: str, threshold: float, threshold_label: str,
+                          out_name: str, title: str, ylabel: str,
+                          digits: int = 2) -> Path:
+    """Bar chart for a single SLA metric across three configurations.
+
+    Compares baseline vs FP8+prefix-caching vs FP8+prefix-caching+TP=2.
+    Bars where the metric exceeds `threshold` are recolored red.
     """
     bf = numbers.derive_tpot(numbers.latency_grid("baseline"))
-    combo = numbers.reconciled_caching_combo(combo_subdir) or {}
-    if not bf or not combo:
+    fp_pref = numbers.reconciled_caching_combo("prefix_caching_fp8") or {}
+    all_on = numbers.reconciled_caching_combo("prefix_caching_fp8_tp2") or {}
+    if not bf or not fp_pref or not all_on:
         return OUT / out_name
 
-    Ls = sorted(set(bf) & set(combo))
-    bf_y = [bf[L]["end_to_end_mean_ms"] for L in Ls]
-    cb_y = [combo[L]["end_to_end_mean_ms"] for L in Ls]
-    SLA = 500
+    Ls = sorted(set(bf) & set(fp_pref) & set(all_on))
+    bf_y = [bf[L][metric] for L in Ls]
+    fp_y = [fp_pref[L][metric] for L in Ls]
+    al_y = [all_on[L][metric] for L in Ls]
 
-    # Wide-and-short aspect ratio to fit beneath the verdict table on the slide
-    fig, ax = plt.subplots(figsize=(11.5, 3.2))
+    fig, ax = plt.subplots(figsize=(11.5, 4.2))
     fig.patch.set_facecolor("white")
 
-    max_y = max(max(bf_y), max(cb_y)) * 1.18
+    max_y = max(max(bf_y), max(fp_y), max(al_y), threshold) * 1.20
 
-    # Shaded fail region above threshold
-    ax.axhspan(SLA, max_y, color="#FBE9E1", alpha=0.7, zorder=0)
-
-    # Threshold line
-    ax.axhline(SLA, color=WARN, linewidth=1.6, linestyle="--", zorder=1)
-    ax.text(len(Ls) - 0.5, SLA + max_y * 0.015,
-            f"  SLA: end-to-end < {SLA} ms  ",
+    ax.axhspan(threshold, max_y, color="#FBE9E1", alpha=0.7, zorder=0)
+    ax.axhline(threshold, color=WARN, linewidth=1.6, linestyle="--", zorder=1)
+    ax.text(len(Ls) - 0.5, threshold + max_y * 0.015,
+            f"  SLA: {threshold_label}  ",
             ha="right", va="bottom",
             fontsize=10, color=WARN, fontweight="bold")
 
     x = np.arange(len(Ls))
-    w = 0.36
+    w = 0.27
 
-    # Color each bar individually based on pass/fail
-    bf_colors = [WARN if y >= SLA else SUBTLE for y in bf_y]
-    cb_colors = [WARN if y >= SLA else GREEN for y in cb_y]
+    def cols(ys, base):
+        return [WARN if y >= threshold else base for y in ys]
 
-    bars1 = ax.bar(x - w / 2, bf_y, w, color=bf_colors, label="baseline",
+    bars1 = ax.bar(x - w, bf_y, w, color=cols(bf_y, _BAR_BASELINE),
                    edgecolor="white", linewidth=1.0, zorder=2)
-    bars2 = ax.bar(x + w / 2, cb_y, w, color=cb_colors, label=combo_label,
+    bars2 = ax.bar(x,     fp_y, w, color=cols(fp_y, _BAR_FP8_PREFIX),
+                   edgecolor="white", linewidth=1.0, zorder=2)
+    bars3 = ax.bar(x + w, al_y, w, color=cols(al_y, _BAR_ALL_ON),
                    edgecolor="white", linewidth=1.0, zorder=2)
 
-    for bars in (bars1, bars2):
-        for rect in bars:
+    for bars, ys in ((bars1, bf_y), (bars2, fp_y), (bars3, al_y)):
+        for rect, v in zip(bars, ys):
             ax.text(rect.get_x() + rect.get_width() / 2,
                     rect.get_height() + max_y * 0.012,
-                    f"{rect.get_height():.0f}",
+                    f"{v:.{digits}f}",
                     ha="center", va="bottom",
-                    fontsize=10, color=INK, fontweight="bold")
+                    fontsize=9, color=INK, fontweight="bold")
 
     ax.set_xticks(x)
     ax.set_xticklabels([str(L) for L in Ls], fontsize=11, color=INK)
     ax.set_ylim(0, max_y)
 
-    # Custom legend with neutral swatches
     from matplotlib.patches import Patch
     legend_elements = [
-        Patch(facecolor=SUBTLE, label="baseline"),
-        Patch(facecolor=GREEN, label=combo_label),
+        Patch(facecolor=_BAR_BASELINE, label="baseline"),
+        Patch(facecolor=_BAR_FP8_PREFIX, label="FP8 + prefix caching"),
+        Patch(facecolor=_BAR_ALL_ON, label="FP8 + prefix caching + TP=2"),
         Patch(facecolor=WARN, label="misses SLA"),
     ]
     ax.legend(handles=legend_elements, loc="upper left",
-              frameon=False, fontsize=10)
+              frameon=False, fontsize=10, ncol=2)
     _style(ax,
-           ylabel="end-to-end latency, 200 tokens out (ms)",
+           ylabel=ylabel,
            xlabel="input length (tokens)",
            title=title)
 
@@ -613,6 +617,42 @@ def verdict_combo_chart(combo_subdir: str, combo_label: str,
     fig.savefig(out, dpi=200, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     return out
+
+
+def verdict_chart_ttft() -> Path:
+    return verdict_metric_chart(
+        metric="ttft_mean_ms",
+        threshold=15.0,
+        threshold_label="TTFT < 15 ms",
+        out_name="appendix_verdict_metric_ttft.png",
+        title="SLA verdict — TTFT across input length",
+        ylabel="TTFT mean (ms)",
+        digits=1,
+    )
+
+
+def verdict_chart_tpot() -> Path:
+    return verdict_metric_chart(
+        metric="tpot_mean_ms",
+        threshold=2.5,
+        threshold_label="TPOT < 2.5 ms",
+        out_name="appendix_verdict_metric_tpot.png",
+        title="SLA verdict — TPOT across input length",
+        ylabel="TPOT mean (ms per token)",
+        digits=2,
+    )
+
+
+def verdict_chart_e2e() -> Path:
+    return verdict_metric_chart(
+        metric="end_to_end_mean_ms",
+        threshold=500.0,
+        threshold_label="end-to-end < 500 ms (200-token response)",
+        out_name="appendix_verdict_metric_e2e.png",
+        title="SLA verdict — end-to-end across input length",
+        ylabel="end-to-end latency, 200 tokens out (ms)",
+        digits=0,
+    )
 
 
 def main() -> None:
@@ -626,16 +666,9 @@ def main() -> None:
         sla_verdict_e2e(),
         prefix_caching(),
         flop_math(),
-        verdict_combo_chart(
-            "prefix_caching_fp8", "FP8 + prefix caching",
-            "appendix_verdict_combo_fp8_caching.png",
-            "FP8 + prefix caching clears the SLA across the grid",
-        ),
-        verdict_combo_chart(
-            "prefix_caching_fp8_tp2", "FP8 + caching + TP=2",
-            "appendix_verdict_combo_all_on.png",
-            "Everything on — TP=2 trims a few more ms on top of FP8 + caching",
-        ),
+        verdict_chart_ttft(),
+        verdict_chart_tpot(),
+        verdict_chart_e2e(),
     ]
     for p in paths:
         print(f"wrote {p}")
