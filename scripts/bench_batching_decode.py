@@ -6,9 +6,14 @@ ShareGPT prompts. Isolates the MoE-batching question from prefill-mixing.
 If OLMoE batching amortizes cleanly at all, it should amortize here. If
 TPOT still grows badly, the culprit is MoE routing at high batch, not
 prefill mixing.
+
+Usage:
+    uv run python -m scripts.bench_batching_decode            # bf16
+    uv run python -m scripts.bench_batching_decode --fp8      # FP8 quantization
 """
 from __future__ import annotations
 
+import argparse
 import dataclasses
 import json
 from datetime import datetime, timezone
@@ -24,12 +29,19 @@ POOL_SIZE = 256
 OUTPUT_TOKENS = 128
 WARMUP_S = 10.0
 MEASURE_S = 30.0
-RESULTS_DIR = Path("results/harness/batching_decode")
+DEFAULT_RESULTS_DIR = Path("results/harness/batching_decode")
+FP8_RESULTS_DIR = Path("results/harness/batching_decode_fp8")
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--fp8", action="store_true",
+                        help="Run with --quantization fp8 (default: bf16).")
+    args = parser.parse_args()
+
+    results_dir = FP8_RESULTS_DIR if args.fp8 else DEFAULT_RESULTS_DIR
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    results_dir.mkdir(parents=True, exist_ok=True)
 
     # Each request gets a unique 1-token prompt (via different seeds) so
     # concurrent requests don't accidentally share a prefix.
@@ -42,15 +54,19 @@ def main():
         for i in range(POOL_SIZE)
     ]
 
+    extra_args = [
+        "--dtype", "bfloat16",
+        "--gpu-memory-utilization", "0.85",
+        "--no-enable-prefix-caching",
+        "--max-num-seqs", "256",
+    ]
+    if args.fp8:
+        extra_args = ["--quantization", "fp8"] + extra_args
+
     cfg = ServerConfig(
         engine="vllm",
         model=MODEL,
-        extra_args=[
-            "--dtype", "bfloat16",
-            "--gpu-memory-utilization", "0.85",
-            "--no-enable-prefix-caching",
-            "--max-num-seqs", "256",
-        ],
+        extra_args=extra_args,
     )
 
     summary: dict = {}
@@ -75,7 +91,7 @@ def main():
                 "tpot_ms": result.tpot_ms,
                 "total_ms": result.total_ms,
             }
-            out_path = RESULTS_DIR / f"batching_decode_B{B}_{timestamp}.json"
+            out_path = results_dir /f"batching_decode_B{B}_{timestamp}.json"
             with open(out_path, "w") as f:
                 json.dump(
                     {
@@ -101,7 +117,7 @@ def main():
             print(f"  TPOT mean {result.tpot_ms['mean']:.2f} ms, "
                   f"p90 {result.tpot_ms['p90']:.2f} ms")
 
-    summary_path = RESULTS_DIR / f"summary_{timestamp}.json"
+    summary_path = results_dir /f"summary_{timestamp}.json"
     summary_path.write_text(json.dumps(summary, indent=2))
     print(f"\n[summary] wrote {summary_path}\n")
 
