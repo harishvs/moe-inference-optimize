@@ -168,6 +168,52 @@ def ttft_vs_length() -> Path:
     return out
 
 
+def tpot_vs_length() -> Path:
+    bf = numbers.derive_tpot(numbers.latency_grid("baseline"))
+    fp = numbers.derive_tpot(numbers.latency_grid("fp8"))
+    tp = numbers.derive_tpot(numbers.latency_grid("baseline_tp2"))
+
+    Ls = sorted(bf.keys())
+
+    def tpot(grid, L):
+        return grid.get(L, {}).get("tpot_mean_ms")
+
+    bf_y = [tpot(bf, L) for L in Ls]
+    fp_y = [tpot(fp, L) for L in Ls]
+    tp_y = [tpot(tp, L) for L in Ls]
+
+    fig, ax = plt.subplots(figsize=(10, 4.6))
+    fig.patch.set_facecolor("white")
+
+    ax.plot(Ls, bf_y, "-o", color=ACCENT, linewidth=2.4, markersize=8,
+            label="default settings (one GPU)")
+    if any(v is not None for v in fp_y):
+        ax.plot(Ls, fp_y, "-s", color=GREEN, linewidth=2.4, markersize=8,
+                label="FP8 (one GPU)")
+    if any(v is not None for v in tp_y):
+        ax.plot(Ls, tp_y, "-^", color=WARN, linewidth=2.4, markersize=8,
+                label="both GPUs together (TP=2)")
+
+    for L, y in zip(Ls, bf_y):
+        ax.text(L, y + 0.10, f"{y:.2f}", ha="center", va="bottom",
+                fontsize=10, color=ACCENT)
+
+    ax.set_xticks(Ls)
+    ax.set_xticklabels([str(L) for L in Ls], fontsize=11, color=INK)
+    ax.set_ylim(0, max(bf_y) * 1.30)
+    ax.legend(loc="lower right", frameon=False, fontsize=11)
+    _style(ax,
+           ylabel="TPOT mean (ms per token)",
+           xlabel="input length (tokens)",
+           title="TPOT by approach — single user (batch=1)")
+
+    fig.tight_layout()
+    out = OUT / "appendix_tpot_vs_length.png"
+    fig.savefig(out, dpi=200, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    return out
+
+
 # ------------------------------------------------------------
 # Appendix 3: Batching Pareto
 # ------------------------------------------------------------
@@ -198,8 +244,8 @@ def batching_pareto() -> Path:
     ax1.set_xticklabels([str(B) for B in Bs], fontsize=11, color=INK)
     _style(ax1,
            ylabel="tokens served per second",
-           xlabel="users served at the same time",
-           title="More users at once → more total throughput, slower TPOT per user")
+           xlabel="batch size  (in-flight requests in one vLLM pod)",
+           title="Continuous batching: throughput rises, per-request TPOT degrades")
     ax1.set_ylim(0, max(tok) * 1.18)
 
     # TPOT line on right axis
@@ -330,6 +376,7 @@ def main() -> None:
     paths = [
         fp8_accuracy(),
         ttft_vs_length(),
+        tpot_vs_length(),
         batching_pareto(),
         prefix_caching(),
         flop_math(),

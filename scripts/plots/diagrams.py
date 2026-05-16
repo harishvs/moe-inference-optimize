@@ -231,7 +231,7 @@ def prefill_kernel_breakdown() -> Path:
     return out
 
 
-def repo_qr(url: str = "https://github.com/harishvs/olmoe-kernel") -> Path:
+def repo_qr(url: str = "https://github.com/harishvs/moe-inference-optimize") -> Path:
     """Generate a QR code pointing at the repo, for the Q&A slide."""
     import qrcode
     qr = qrcode.QRCode(
