@@ -1549,26 +1549,32 @@ def appendix_kv_cache(prs: Presentation) -> None:
     add_table(s, table_rows, left=0.5, top=2.0, width=12.3, height=2.6, pt=14,
               col_widths=[2.2, 2.8, 2.4, 2.3, 2.6])
 
+    add_text(s,
+             "Cached once per unique prefix, reused across every session that "
+             "shares it — not per request, not per user.",
+             left=0.5, top=4.55, width=12.3, height=0.35,
+             pt=12, italic=True, color=SUBTLE)
+
     # Side-by-side captions explaining the math and the budget
     add_text(s, "FIRST-PRINCIPLES MATH",
-             left=0.6, top=4.85, width=6.0, height=0.3,
+             left=0.6, top=4.95, width=6.0, height=0.3,
              pt=11, bold=True, color=ACCENT)
     add_text(s,
              "Per token of cached prefix:\n"
              "16 layers × 2 (K + V) × 16 heads × 128 d_head × 2 bytes (bf16)\n"
              "= 131,072 bytes = 128 KiB / token",
-             left=0.6, top=5.20, width=6.0, height=1.4,
+             left=0.6, top=5.30, width=6.0, height=1.4,
              pt=12, color=SUBTLE)
 
     add_text(s, "MEASURED ON g7e.12xlarge",
-             left=7.0, top=4.85, width=6.0, height=0.3,
+             left=7.0, top=4.95, width=6.0, height=0.3,
              pt=11, bold=True, color=ACCENT)
     add_text(s,
              "Total KV cache budget: 545,184 tokens (~73 GiB) at "
              "gpu_mem_util=0.85.\n"
              "Even L=1500 uses < 0.3% of the budget. Memory is "
              "not the constraint.",
-             left=7.0, top=5.20, width=6.0, height=1.4,
+             left=7.0, top=5.30, width=6.0, height=1.4,
              pt=12, color=SUBTLE)
 
     add_text(s,
@@ -1576,7 +1582,7 @@ def appendix_kv_cache(prs: Presentation) -> None:
              "(rounded; sub-1% allocations are below the gauge's reporting "
              "precision). Hit rate and prompt_tokens_cached counters confirm "
              "the cache is allocating and reusing prefixes as expected.",
-             left=0.6, top=6.7, width=12.3, height=0.6,
+             left=0.6, top=6.75, width=12.3, height=0.55,
              pt=10, italic=True, color=SUBTLE)
     add_footer(s, 25)
     set_notes(s,
