@@ -475,9 +475,9 @@ def slide_lever_board(prs: Presentation) -> None:
                    f"TPOT {abs(d['tpot_pct']):.0f}% faster")
     pc_cell = "TBD"
     if pc:
-        P_max = max(pc)
-        pc_cell = (f"TTFT {pc[P_max]['savings_pct']:.0f}% faster "
-                   f"on shared prompts (P=2048)")
+        L_max = max(pc)
+        pc_cell = (f"TTFT {pc[L_max]['savings_pct']:.0f}% faster "
+                   f"on shared prompts (L={L_max})")
     tp_cell = "TBD"
     if tp:
         L_pick = 1024 if 1024 in tp else next(iter(sorted(tp)))
@@ -844,8 +844,8 @@ def slide_tradeoffs(prs: Presentation) -> None:
         "Our chat app uses a long system prompt with tool descriptions and "
         "few-shot examples — that's the right side of this chart, where the "
         "savings are largest.\n\n"
-        "Left bars: short shared prompt, 13% faster first word. "
-        "Middle: medium prompt, 14%. Right: long shared prompt, 40% faster.\n\n"
+        "Left bars: short shared prompt (L=128), 3% faster first word. "
+        "Middle: L=512 → 11%, L=1024 → 23%. Right: L=1500 → 30% faster.\n\n"
         "The pattern: reuse helps most when the prompt is most expensive to "
         "recompute — which is exactly when we want to skip it.\n\n"
         "Caveat for a different workload: if every request has a totally "
@@ -1028,7 +1028,7 @@ def slide_architecture_tradeoffs(prs: Presentation) -> None:
          "Slight precision loss on some ops",
          "Run eval suite before prod; bf16 fallback available"],
         ["Prefix caching",
-         "40% TTFT cut on shared prompts",
+         "30% TTFT cut on shared prompts (L=1500)",
          "Cache miss = no benefit; memory overhead",
          "Size KV cache to workload; monitor hit rate"],
         ["Tensor parallel (2 GPUs)",
