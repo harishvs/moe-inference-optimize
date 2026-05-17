@@ -401,6 +401,7 @@ def slide_profile(prs: Presentation) -> None:
         "Attention projection GEMMs are second at ~18%",
         "Hot path is already production-tuned in vLLM — no kernel headroom on the dominant paths",
         "Levers live above the kernels: quantization, caching, batching, parallelism",
+        "A custom kernel here would also raise TCO — ongoing maintenance against vLLM and CUDA upgrades",
     ], left=8.3, top=2.25, width=4.6, height=4.5, pt=14, line_gap_pt=6)
     add_footer(s, 6)
     set_notes(s,
