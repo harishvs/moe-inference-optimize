@@ -208,9 +208,9 @@ def slide_title(prs: Presentation) -> None:
     add_text(s, "AI Infrastructure",
              left=0.8, top=2.1, width=12.0, height=0.5,
              pt=14, bold=True, color=ACCENT)
-    add_text(s, "Unblock the chat application production launch",
+    add_text(s, "Ship the chat assistant",
              left=0.8, top=2.5, width=12.0, height=1.0,
-             pt=40, bold=True, color=INK)
+             pt=48, bold=True, color=INK)
     add_text(s, "Cutting per-request response time on OLMoE-1B-7B / vLLM",
              left=0.8, top=3.7, width=12.0, height=0.5,
              pt=20, color=SUBTLE)
