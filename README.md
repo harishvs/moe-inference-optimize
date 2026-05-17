@@ -135,9 +135,11 @@ uv run python scripts/build_deck.py
 ## Repo layout
 
 ```
+main.py                      # prints the canonical reproduction pipeline
+pyproject.toml               # uv-managed dependencies
 scripts/
   smoke_test.py              # end-to-end sanity check
-  benchmark_latency.py       # TTFT/TPOT grid sweep (bf16 or --fp8)
+  benchmark_latency.py       # TTFT/TPOT grid sweep (bf16, --fp8, --tp)
   profile_prefill.py         # torch.profiler trace, prefill-dominated
   profile_decode.py          # torch.profiler trace, decode-dominated
   eval_suite.py              # lm-evaluation-harness, bf16 vs FP8
@@ -147,16 +149,18 @@ scripts/
   bench_batching_decode.py   # pure-decode concurrent workload
   build_deck.py              # talk/deck.pptx generator
   harness/                   # vLLM-server launcher + streaming HTTP client
-  plots/                     # matplotlib figure generators
+  plots/                     # matplotlib figure generators (incl. diagrams.py)
 results/
   baseline_*.json            # bf16 latency cells
   fp8_*.json                 # FP8 latency cells
+  baseline_tp2_*.json        # bf16 TP=2 latency cells
   eval/                      # lm-evaluation-harness outputs
   harness/                   # HTTP-harness outputs (prefix, batching)
   profile/                   # torch.profiler traces + kernel summaries
   archive/                   # historical L4 runs (kept for traceability)
 talk/
   deck.pptx                  # the presentation
+  numbers.py                 # reads results/ → live numbers for the deck
   figures/                   # embedded plots and diagrams
 tasks/
   requirements.md            # user stories

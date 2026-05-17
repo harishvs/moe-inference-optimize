@@ -1174,34 +1174,29 @@ def slide_code_overview(prs: Presentation) -> None:
     s = blank(prs)
     add_title(s, "What I wrote", eyebrow="THE CODE")
 
-    # Left column — scripts/
-    add_text(s, "scripts/", left=0.5, top=1.85, width=6.5, height=0.3,
-             pt=12, bold=True, color=ACCENT)
+    # scripts/
+    add_text(s, "scripts/", left=0.5, top=1.85, width=12.0, height=0.3,
+             pt=14, bold=True, color=ACCENT)
     _add_code_block(s, [
-        "  smoke_test.py              # end-to-end sanity check",
-        "  benchmark_latency.py       # TTFT/TPOT grid sweep (bf16 or --fp8)",
-        "  profile_prefill.py         # torch.profiler trace, prefill-dominated",
-        "  profile_decode.py          # torch.profiler trace, decode-dominated",
-        "  eval_suite.py              # lm-evaluation-harness, bf16 vs FP8",
-        "  bench_compat_check.py      # harness vs `vllm bench latency` reconciliation",
-        "  bench_prefix_caching.py    # prefix caching experiment",
-        "  bench_batching.py          # ShareGPT concurrent workload",
-        "  bench_batching_decode.py   # pure-decode concurrent workload",
-        "  build_deck.py              # talk/deck.pptx generator",
-        "  harness/                   # vLLM-server launcher + streaming HTTP client",
-        "  plots/                     # matplotlib figure generators",
-    ], left=0.5, top=2.20, width=8.5, height=3.4, pt=10)
+        "  smoke_test.py              # sanity check before benchmarking — loads OLMoE, generates one token",
+        "  benchmark_latency.py       # direct-from-engine TTFT/TPOT (no HTTP overhead) — bf16, --fp8, --tp 2",
+        "  profile_prefill.py         # torch.profiler trace at L=1024 — kernel breakdown",
+        "  profile_decode.py          # torch.profiler trace at I=1, O=128 — decode kernels",
+        "  bench_prefix_caching.py    # caching via HTTP harness (bf16 / fp8 / tp2 combos)",
+        "  bench_batching_decode.py   # tokens/sec and per-user TPOT across concurrency 1 → 128",
+        "  eval_suite.py              # lm-evaluation-harness — FP8 accuracy on MMLU / GSM8K / ...",
+        "  harness/                   # engine-agnostic vLLM-server launcher + HTTP client",
+    ], left=0.5, top=2.25, width=12.5, height=3.0, pt=13)
 
-    # Right column / below — results/
-    add_text(s, "results/", left=0.5, top=5.45, width=6.5, height=0.3,
-             pt=12, bold=True, color=ACCENT)
+    # results/
+    add_text(s, "results/", left=0.5, top=5.40, width=12.0, height=0.3,
+             pt=14, bold=True, color=ACCENT)
     _add_code_block(s, [
-        "  baseline_*.json            # bf16 latency cells",
-        "  fp8_*.json                 # FP8 latency cells",
-        "  eval/                      # lm-evaluation-harness outputs",
-        "  harness/                   # HTTP-harness outputs (prefix, batching)",
-        "  profile/                   # torch.profiler traces + kernel summaries",
-    ], left=0.5, top=5.80, width=8.5, height=1.2, pt=10)
+        "  baseline_*.json            # bf16 / FP8 / TP=2 latency cells (one JSON per L × O)",
+        "  harness/                   # HTTP-harness outputs (prefix caching, batching)",
+        "  profile/                   # torch.profiler traces + per-kernel summaries",
+        "  eval/                      # lm-evaluation-harness raw outputs",
+    ], left=0.5, top=5.80, width=12.5, height=1.1, pt=13)
 
     add_footer(s, 18)
     set_notes(s,
