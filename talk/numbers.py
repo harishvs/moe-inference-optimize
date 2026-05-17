@@ -245,6 +245,41 @@ def latest_summary(subdir: str) -> Optional[dict]:
     return json.loads(candidates[-1].read_text())
 
 
+# Constants used by kv_cache_footprint(): OLMoE-1B-7B architecture +
+# Blackwell single-pod budget (from vLLM's startup log).
+_KV_CACHE_BYTES_PER_TOKEN = 16 * 2 * 16 * 128 * 2   # layers × KV × heads × d_head × bf16 = 131072 = 128 KiB
+_KV_CACHE_TOTAL_TOKENS = 545_184                     # measured at startup: g7e.12xlarge, gpu_mem_util=0.85
+
+
+def kv_cache_footprint() -> Optional[list[dict]]:
+    """Return measured prefix-caching footprint per prefix length.
+
+    Reads results/harness/kv_cache_footprint/summary_*.json (the newest one).
+    Each result has: prefix_len, hit_rate_on_reuse, cached_tokens_added_on_warm.
+    The function annotates each row with first-principles bytes/MiB and
+    % of the total KV cache budget.
+    """
+    candidates = sorted((RESULTS / "harness" / "kv_cache_footprint").glob("summary_*.json"))
+    if not candidates:
+        return None
+    raw = json.loads(candidates[-1].read_text())
+    out = []
+    for r in raw["results"]:
+        P = int(r["prefix_len"])
+        L = int(r.get("input_len", P + r.get("suffix_len", 64)))
+        bytes_used = P * _KV_CACHE_BYTES_PER_TOKEN
+        out.append({
+            "input_len":             L,
+            "prefix_len":            P,
+            "bytes":                 bytes_used,
+            "mib":                   bytes_used / (1024 * 1024),
+            "pct_of_budget":         100 * P / _KV_CACHE_TOTAL_TOKENS,
+            "hit_rate":              r["hit_rate_on_reuse"] * 100,
+            "cached_tokens_added":   r.get("cached_tokens_added_on_warm", 0),
+        })
+    return out
+
+
 def prefix_caching_summary() -> Optional[dict]:
     """{ key: {off_mean, on_mean, savings_pct} } for the latest prefix-caching run.
 

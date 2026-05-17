@@ -1,0 +1,120 @@
+{
+  "results": [
+    {
+      "prefix_len": 128,
+      "suffix_len": 64,
+      "n_reuse": 5,
+      "cold": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 0.0,
+        "prefix_cache_hits": 0.0,
+        "prompt_tokens_cached": 0.0
+      },
+      "after_warm": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 192.0,
+        "prefix_cache_hits": 0.0,
+        "prompt_tokens_cached": 0.0
+      },
+      "after_reuse": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 1150.0,
+        "prefix_cache_hits": 640.0,
+        "prompt_tokens_cached": 640.0
+      },
+      "kv_cache_pct_after_warm": 0.0,
+      "kv_cache_pct_after_reuse": 0.0,
+      "queries_on_reuse": 958.0,
+      "hits_on_reuse": 640.0,
+      "hit_rate_on_reuse": 0.6680584551148225,
+      "cached_tokens_added_on_warm": 0.0
+    },
+    {
+      "prefix_len": 512,
+      "suffix_len": 64,
+      "n_reuse": 5,
+      "cold": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 1150.0,
+        "prefix_cache_hits": 640.0,
+        "prompt_tokens_cached": 640.0
+      },
+      "after_warm": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 1726.0,
+        "prefix_cache_hits": 768.0,
+        "prompt_tokens_cached": 768.0
+      },
+      "after_reuse": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 4604.0,
+        "prefix_cache_hits": 3328.0,
+        "prompt_tokens_cached": 3328.0
+      },
+      "kv_cache_pct_after_warm": 0.0,
+      "kv_cache_pct_after_reuse": 0.0,
+      "queries_on_reuse": 2878.0,
+      "hits_on_reuse": 2560.0,
+      "hit_rate_on_reuse": 0.8895066018068103,
+      "cached_tokens_added_on_warm": 128.0
+    },
+    {
+      "prefix_len": 1024,
+      "suffix_len": 64,
+      "n_reuse": 5,
+      "cold": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 4604.0,
+        "prefix_cache_hits": 3328.0,
+        "prompt_tokens_cached": 3328.0
+      },
+      "after_warm": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 5692.0,
+        "prefix_cache_hits": 3840.0,
+        "prompt_tokens_cached": 3840.0
+      },
+      "after_reuse": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 11130.0,
+        "prefix_cache_hits": 8960.0,
+        "prompt_tokens_cached": 8960.0
+      },
+      "kv_cache_pct_after_warm": 0.0,
+      "kv_cache_pct_after_reuse": 0.0,
+      "queries_on_reuse": 5438.0,
+      "hits_on_reuse": 5120.0,
+      "hit_rate_on_reuse": 0.941522618609783,
+      "cached_tokens_added_on_warm": 512.0
+    },
+    {
+      "prefix_len": 2048,
+      "suffix_len": 64,
+      "n_reuse": 5,
+      "cold": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 11130.0,
+        "prefix_cache_hits": 8960.0,
+        "prompt_tokens_cached": 8960.0
+      },
+      "after_warm": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 13242.0,
+        "prefix_cache_hits": 9984.0,
+        "prompt_tokens_cached": 9984.0
+      },
+      "after_reuse": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 23800.0,
+        "prefix_cache_hits": 20224.0,
+        "prompt_tokens_cached": 20224.0
+      },
+      "kv_cache_pct_after_warm": 0.0,
+      "kv_cache_pct_after_reuse": 0.0,
+      "queries_on_reuse": 10558.0,
+      "hits_on_reuse": 10240.0,
+      "hit_rate_on_reuse": 0.9698806592157606,
+      "cached_tokens_added_on_warm": 1024.0
+    }
+  ]
+}

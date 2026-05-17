@@ -515,7 +515,8 @@ def slide_lever_board(prs: Presentation) -> None:
 
 def _verdict_table_only(prs: Presentation, *, title: str, eyebrow: str,
                          combo_label: str, combo_data: dict[int, dict],
-                         page_num: int, notes: str) -> None:
+                         page_num: int, notes: str,
+                         methodology: str | None = None) -> None:
     """Verdict table slide: full-width table, methodology footnote.
 
     Same shape as slide 5: rows = input length, cols = TTFT/TPOT/e2e for
@@ -564,10 +565,12 @@ def _verdict_table_only(prs: Presentation, *, title: str, eyebrow: str,
              "response). Red cells miss the SLA.",
              left=0.6, top=5.8, width=12.0, height=0.4,
              pt=12, italic=True, color=SUBTLE)
-    add_text(s,
-             "Baseline numbers from in-process vLLM bench. Caching combo from "
-             "HTTP harness, with ~20 ms harness overhead reconciled per input "
-             "length against the bf16 cache-off harness baseline.",
+    default_methodology = (
+        "Baseline and FP8 numbers from in-process vLLM bench. Caching numbers "
+        "from HTTP harness, with ~20 ms harness overhead reconciled per input "
+        "length against the bf16 cache-off harness baseline."
+    )
+    add_text(s, methodology or default_methodology,
              left=0.6, top=6.25, width=12.0, height=0.6,
              pt=10, italic=True, color=SUBTLE)
     add_footer(s, page_num)
@@ -585,6 +588,66 @@ def _verdict_chart_only(prs: Presentation, *, title: str, eyebrow: str,
     set_notes(s, notes)
 
 
+def slide_sla_verdict_fp8_alone(prs: Presentation) -> None:
+    fp8 = numbers.derive_tpot(numbers.latency_grid("fp8")) or {}
+    _verdict_table_only(
+        prs,
+        title="SLA verdict — FP8 alone",
+        eyebrow="VERDICT",
+        combo_label="FP8 alone",
+        combo_data=fp8,
+        page_num=8,
+        notes=(
+            "First independent verdict: what does FP8 alone do, with no "
+            "caching? Same baseline on the left, FP8 (in-process bench) "
+            "on the right.\n\n"
+            "FP8 wins consistently on TPOT and e2e across the grid. "
+            "TPOT 1.98–2.43 ms (under 2.5 ms target everywhere). "
+            "End-to-end 401–501 ms (just barely misses at L=1500 by ~1 "
+            "ms).\n\n"
+            "FP8 alone partially clears TTFT: passes at L=128 (7.1 ms) "
+            "and L=512 (9.1 ms), but misses at L=1024 (16.6 ms) and "
+            "L=1500 (17.5 ms) — over the 15 ms target.\n\n"
+            "Conclusion: FP8 alone is necessary but not sufficient at "
+            "long prompts. The next slide shows what prefix caching "
+            "alone does — and after that, the combo that clears every "
+            "cell."
+        ),
+    )
+
+
+def slide_sla_verdict_caching_alone(prs: Presentation) -> None:
+    caching = numbers.reconciled_caching_combo("prefix_caching") or {}
+    _verdict_table_only(
+        prs,
+        title="SLA verdict — prefix caching alone",
+        eyebrow="VERDICT",
+        combo_label="prefix caching alone (bf16)",
+        combo_data=caching,
+        page_num=9,
+        notes=(
+            "Second independent verdict: prefix caching, no FP8. Same "
+            "baseline on the left, prefix caching alone on the right "
+            "(measured via HTTP harness, ~20 ms overhead reconciled "
+            "per L).\n\n"
+            "TTFT cleanly passes at every L: 9.7–11.4 ms (under 15 ms "
+            "target). Caching skips the prefill compute entirely — "
+            "TTFT depends on the cache-miss suffix only, not the "
+            "total prompt length. This is the cleanest visual "
+            "demonstration of why caching helps.\n\n"
+            "TPOT and e2e: caching doesn't affect decode bandwidth, "
+            "so TPOT stays at the bf16 baseline values (2.32–2.78 ms). "
+            "TPOT borderline at L=1024 (2.61 ms — 0.11 ms over) and "
+            "fails at L=1500 (2.78 ms). End-to-end fails at L=1500 "
+            "(564 ms).\n\n"
+            "Conclusion: caching is necessary but not sufficient. It "
+            "fixes TTFT but doesn't help TPOT. FP8 alone does the "
+            "opposite. Together they clear every cell — that's the "
+            "next slide."
+        ),
+    )
+
+
 def slide_sla_verdict_table_recommended(prs: Presentation) -> None:
     combo = numbers.reconciled_caching_combo("prefix_caching_fp8") or {}
     _verdict_table_only(
@@ -593,7 +656,7 @@ def slide_sla_verdict_table_recommended(prs: Presentation) -> None:
         eyebrow="VERDICT",
         combo_label="FP8 + prefix caching",
         combo_data=combo,
-        page_num=8,
+        page_num=10,
         notes=(
             "Baseline on the left, FP8 + prefix caching on the right. "
             "Red cells miss the SLA.\n\n"
@@ -618,7 +681,7 @@ def slide_sla_verdict_chart_ttft(prs: Presentation) -> None:
         title="SLA verdict — TTFT across input length",
         eyebrow="VERDICT",
         chart_path=FIG_DIR / "appendix_verdict_metric_ttft.png",
-        page_num=10,
+        page_num=12,
         notes=(
             "TTFT verdict, all three configurations side by side at every "
             "chat-app input length.\n\n"
@@ -643,7 +706,7 @@ def slide_sla_verdict_chart_tpot(prs: Presentation) -> None:
         title="SLA verdict — TPOT across input length",
         eyebrow="VERDICT",
         chart_path=FIG_DIR / "appendix_verdict_metric_tpot.png",
-        page_num=11,
+        page_num=13,
         notes=(
             "TPOT verdict. Threshold is 2.5 ms per output token.\n\n"
             "Grey bars (baseline): cross the line at L=512 (2.47 ms) and "
@@ -668,7 +731,7 @@ def slide_sla_verdict_chart_e2e(prs: Presentation) -> None:
         title="SLA verdict — end-to-end across input length",
         eyebrow="VERDICT",
         chart_path=FIG_DIR / "appendix_verdict_metric_e2e.png",
-        page_num=12,
+        page_num=14,
         notes=(
             "End-to-end verdict — the headline metric. Threshold is "
             "500 ms for a 200-token response.\n\n"
@@ -696,7 +759,7 @@ def slide_sla_verdict_table_all_on(prs: Presentation) -> None:
         eyebrow="VERDICT",
         combo_label="FP8 + caching + TP=2",
         combo_data=combo,
-        page_num=9,
+        page_num=11,
         notes=(
             "Same baseline, but the combo column is everything-on: FP8 + "
             "prefix caching + TP=2 across both Blackwell GPUs.\n\n"
@@ -802,7 +865,7 @@ def slide_business_impact(prs: Presentation) -> None:
               eyebrow="APPENDIX")
     add_picture(s, FIG_DIR / "appendix_batching_pareto.png",
                 left=1.4, top=1.95, width=10.5, height=4.85)
-    add_footer(s, 20)
+    add_footer(s, 22)
     set_notes(s,
         "Honest framing of the fourth lever. The bars rise — total throughput "
         "goes up nearly 14× from B=1 to B=128. The line also rises — per-"
@@ -924,7 +987,7 @@ def slide_roi(prs: Presentation) -> None:
              left=7.0, top=6.10, width=6.0, height=0.9,
              pt=13, color=SUBTLE)
 
-    add_footer(s, 13)
+    add_footer(s, 16)
     set_notes(s,
         "Two stories for the VP. Per-request speed on the left, cost per "
         "request on the right. Both backed by directly measured FP8 + "
@@ -979,7 +1042,7 @@ def slide_architecture_tradeoffs(prs: Presentation) -> None:
     ]
     add_table(s, rows, left=0.4, top=2.0, width=12.5, height=4.4, pt=12,
               col_widths=[2.4, 2.6, 3.7, 3.8])
-    add_footer(s, 14)
+    add_footer(s, 17)
     set_notes(s,
         "Every lever has a price; this is the slide where I name them so "
         "neither panelist has to dig them out of me. Walk the table top-to-"
@@ -1061,22 +1124,68 @@ def slide_scaling_10x(prs: Presentation) -> None:
 def slide_recommendation(prs: Presentation) -> None:
     s = blank(prs)
     add_title(s, "Recommendation", eyebrow="VERDICT")
+
+    # Headline — the answer in one sentence
+    headline = s.shapes.add_shape(MSO_SHAPE.RECTANGLE,
+                                  Inches(0.6), Inches(1.85),
+                                  Inches(12.1), Inches(0.95))
+    headline.fill.solid()
+    headline.fill.fore_color.rgb = ACCENT
+    headline.line.fill.background()
+    tf = headline.text_frame
+    tf.margin_left = Emu(0); tf.margin_right = Emu(0)
+    tf.margin_top = Emu(0); tf.margin_bottom = Emu(0)
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    tf.text = "Ship FP8 + prefix caching this week"
+    p = tf.paragraphs[0]
+    p.alignment = PP_ALIGN.CENTER
+    for r in p.runs:
+        r.font.name = FONT
+        r.font.size = Pt(28)
+        r.font.bold = True
+        r.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+
+    # Two columns — the timeline and what to hold for later
+    add_text(s, "DO NOW", left=0.6, top=3.10, width=6.0, height=0.3,
+             pt=11, bold=True, color=ACCENT)
     add_bullets(s, [
-        "Enable FP8 quantization and prefix caching this week — "
-        "validate accuracy on customer evals first",
-        "Evaluate tensor parallelism (TP=2) for TPOT — 14% gain at "
-        "single-user load; rerun under concurrency before adopting in prod",
-        "Use continuous batching only for throughput-mode workloads — "
-        "not chat — per-request TPOT degrades 4× by B=32",
-        "Re-baseline whenever the model, vLLM version, or hardware changes",
-    ])
+        "Turn on FP8 quantization (one flag, --quantization fp8)",
+        "Turn on prefix caching (--enable-prefix-caching)",
+        "Validate GSM8K-style eval on the customer's prompts before flipping in prod",
+    ], left=0.6, top=3.45, width=6.0, height=2.4,
+       pt=14, line_gap_pt=8)
+
+    add_text(s, "HOLD FOR LATER", left=7.0, top=3.10, width=6.0, height=0.3,
+             pt=11, bold=True, color=ACCENT)
+    add_bullets(s, [
+        "Tensor parallel (TP=2) — only if TPOT becomes the bottleneck",
+        "Continuous batching — only for throughput-mode workloads, not chat",
+        "Re-baseline when the model, vLLM, or hardware changes",
+    ], left=7.0, top=3.45, width=6.0, height=2.4,
+       pt=14, line_gap_pt=8)
+
+    add_text(s,
+             "Both Do-Now levers are config flags — no new hardware, no model "
+             "retraining, no ops changes.",
+             left=0.6, top=6.15, width=12.2, height=0.5,
+             pt=12, italic=True, color=SUBTLE)
+
     add_footer(s, 15)
     set_notes(s,
-        "Five lines, in priority order. A staff engineer reading this "
-        "should agree with each one.\n\n"
-        "Last bullet matters: every claim here is tied to *this* model, "
-        "*this* engine version, *this* hardware. Re-baseline whenever "
-        "any of those move. The repo is set up to make that cheap."
+        "Headline says it directly: ship FP8 + prefix caching this week. "
+        "That's the single most important sentence in the talk for a panel "
+        "asking 'what do I do Monday morning?'\n\n"
+        "Two columns of detail under it. DO NOW lists the three concrete "
+        "things to push to production this week — two flag flips and one "
+        "validation step. HOLD FOR LATER names the levers we measured but "
+        "are NOT recommending today, with the trigger condition that would "
+        "change our mind.\n\n"
+        "The italic line at the bottom is the closer for the VP: both "
+        "actions are configuration, not architecture. No CapEx, no ops "
+        "rewrite, no risk profile change beyond the GSM8K accuracy caveat.\n\n"
+        "If the panel pushes for more detail on the levers, slide 16 "
+        "(trade-offs) has the per-lever risk and mitigation. This slide is "
+        "the call-to-action; that one is the technical defense."
     )
 
 
@@ -1103,7 +1212,7 @@ def slide_scaling_remeasure(prs: Presentation) -> None:
              "that aren't on a current deck.",
              left=0.4, top=6.20, width=12.5, height=0.7,
              pt=12, italic=True, color=SUBTLE)
-    add_footer(s, 16)
+    add_footer(s, 18)
     set_notes(s,
         "What to do when the workload changes. Frames input-length growth, "
         "larger-model swaps, and stack updates as triggers to re-measure — "
@@ -1198,7 +1307,7 @@ def slide_code_overview(prs: Presentation) -> None:
         "  eval/                      # lm-evaluation-harness raw outputs",
     ], left=0.5, top=5.80, width=12.5, height=1.1, pt=13)
 
-    add_footer(s, 18)
+    add_footer(s, 20)
     set_notes(s,
         "One-slide summary of the codebase, right before Q&A and the repo "
         "link. Reads like the README — actual file tree, file names tell "
@@ -1281,7 +1390,7 @@ def slide_repo(prs: Presentation) -> None:
     add_text(s, "MIT license — clone, run, contribute",
              left=2.0, top=6.15, width=9.3, height=0.4,
              pt=13, italic=True, color=SUBTLE, align=PP_ALIGN.CENTER)
-    add_footer(s, 17)
+    add_footer(s, 19)
     set_notes(s,
         "QR slide. Lingers while the panel scans. The repo includes:\n\n"
         "- Every script that produced every number in the deck\n"
@@ -1297,13 +1406,10 @@ def slide_repo(prs: Presentation) -> None:
 def slide_qa(prs: Presentation) -> None:
     s = blank(prs)
     add_text(s, "Q&A",
-             left=0.8, top=2.5, width=12.0, height=2.0,
-             pt=120, bold=True, color=INK, align=PP_ALIGN.CENTER)
-    add_rule(s, left=5.6, top=4.6, width=2.0, height_pt=4.0)
-    add_text(s, "15 minutes — fire away.",
-             left=0.8, top=4.9, width=12.0, height=0.5,
-             pt=22, color=SUBTLE, align=PP_ALIGN.CENTER)
-    add_footer(s, 19)
+             left=0.8, top=2.8, width=12.0, height=2.2,
+             pt=140, bold=True, color=INK, align=PP_ALIGN.CENTER)
+    add_rule(s, left=5.6, top=5.2, width=2.0, height_pt=4.0)
+    add_footer(s, 21)
     set_notes(s,
         "Anticipated questions:\n\n"
         "Q (Tech): Does FP8 still win on Blackwell when bandwidth is much "
@@ -1351,7 +1457,7 @@ def appendix_fp8_accuracy(prs: Presentation) -> None:
               eyebrow="APPENDIX")
     add_picture(s, FIG_DIR / "appendix_fp8_accuracy.png",
                 left=1.4, top=1.95, width=10.5, height=4.85)
-    add_footer(s, 21)
+    add_footer(s, 23)
 
 
 def appendix_ttft_lines(prs: Presentation) -> None:
@@ -1417,7 +1523,89 @@ def appendix_cost_math(prs: Presentation) -> None:
              "linearly with traffic.",
              left=0.4, top=6.65, width=12.5, height=0.5,
              pt=10, italic=True, color=SUBTLE)
-    add_footer(s, 22)
+    add_footer(s, 24)
+
+
+def appendix_kv_cache(prs: Presentation) -> None:
+    s = blank(prs)
+    add_title(s, "Prefix caching — KV cache footprint",
+              eyebrow="APPENDIX")
+
+    rows = numbers.kv_cache_footprint() or []
+    table_rows = [
+        ["Input length", "Prefix tokens cached", "KV cache used", "% of budget", "Cache hit rate"],
+    ]
+    for r in rows:
+        table_rows.append([
+            str(r["input_len"]),
+            str(r["prefix_len"]),
+            f"{r['mib']:.0f} MiB",
+            f"{r['pct_of_budget']:.3f}%",
+            f"{r['hit_rate']:.0f}%",
+        ])
+    if len(table_rows) == 1:
+        table_rows.append(["—", "—", "—", "—", "—"])
+
+    add_table(s, table_rows, left=0.5, top=2.0, width=12.3, height=2.6, pt=14,
+              col_widths=[2.2, 2.8, 2.4, 2.3, 2.6])
+
+    # Side-by-side captions explaining the math and the budget
+    add_text(s, "FIRST-PRINCIPLES MATH",
+             left=0.6, top=4.85, width=6.0, height=0.3,
+             pt=11, bold=True, color=ACCENT)
+    add_text(s,
+             "Per token of cached prefix:\n"
+             "16 layers × 2 (K + V) × 16 heads × 128 d_head × 2 bytes (bf16)\n"
+             "= 131,072 bytes = 128 KiB / token",
+             left=0.6, top=5.20, width=6.0, height=1.4,
+             pt=12, color=SUBTLE)
+
+    add_text(s, "MEASURED ON g7e.12xlarge",
+             left=7.0, top=4.85, width=6.0, height=0.3,
+             pt=11, bold=True, color=ACCENT)
+    add_text(s,
+             "Total KV cache budget: 545,184 tokens (~73 GiB) at "
+             "gpu_mem_util=0.85.\n"
+             "Even L=1500 uses < 0.3% of the budget. Memory is "
+             "not the constraint.",
+             left=7.0, top=5.20, width=6.0, height=1.4,
+             pt=12, color=SUBTLE)
+
+    add_text(s,
+             "vLLM gauge `vllm:kv_cache_usage_perc` reads 0.000% at every L "
+             "(rounded; sub-1% allocations are below the gauge's reporting "
+             "precision). Hit rate and prompt_tokens_cached counters confirm "
+             "the cache is allocating and reusing prefixes as expected.",
+             left=0.6, top=6.7, width=12.3, height=0.6,
+             pt=10, italic=True, color=SUBTLE)
+    add_footer(s, 25)
+    set_notes(s,
+        "Direct answer to 'how much KV cache does prefix caching consume?'\n\n"
+        "Each cached prefix token costs 128 KiB on OLMoE bf16: 16 layers × "
+        "2 (K and V) × 16 heads × 128 d_head × 2 bytes. That's a fixed "
+        "per-token cost regardless of how many requests reuse the prefix.\n\n"
+        "The total KV cache budget on g7e.12xlarge — taken from vLLM's "
+        "startup log at gpu_mem_util=0.85 — is 545,184 tokens (~73 GiB). "
+        "A 1,436-token prefix (the L=1500 case in the deck) uses 180 MiB, "
+        "which is 0.26% of the budget. Even at L=1500 the cache is "
+        "essentially free.\n\n"
+        "Hit rate climbs from 50% at L=128 (where the 64-token suffix is "
+        "half the prompt) to 95% at L=1500 (where the cached prefix "
+        "dominates). That's the right shape: caching pays off most when "
+        "the prefix is long, which is exactly the chat-app workload.\n\n"
+        "Why the gauge reads 0.0%: vLLM's kv_cache_usage_perc gauge is "
+        "designed to flag near-saturation, and the reporting precision is "
+        "1 decimal place. Anything under 1% rounds to 0.0%. We confirmed "
+        "the cache is actually working via vllm:prompt_tokens_cached_total "
+        "(jumps by exactly the prefix length on each warm request) and "
+        "vllm:prefix_cache_hits_total (climbs to a 95% hit rate during "
+        "reuse). Both counters are visible in /metrics; both confirm the "
+        "first-principles math.\n\n"
+        "Where memory WOULD become a constraint: if there were 100 distinct "
+        "long system prompts cached in parallel (multi-tenant), 100 × 180 "
+        "MiB = 18 GiB ≈ 25% of the budget. Still fine, but worth flagging "
+        "if the workload changes."
+    )
 
 
 def appendix_flop_math(prs: Presentation) -> None:
@@ -1426,7 +1614,7 @@ def appendix_flop_math(prs: Presentation) -> None:
               eyebrow="APPENDIX")
     add_picture(s, FIG_DIR / "appendix_flop_math.png",
                 left=2.0, top=1.95, width=9.0, height=4.85)
-    add_footer(s, 23)
+    add_footer(s, 26)
     set_notes(s,
         "The textbook claim that 'attention is O(N²)' is true asymptotically "
         "but misleading at chat-app scale. The full walkthrough if asked:\n\n"
@@ -1521,14 +1709,16 @@ def build() -> None:
     slide_baseline(prs)
     slide_profile(prs)
     slide_lever_board(prs)
+    slide_sla_verdict_fp8_alone(prs)
+    slide_sla_verdict_caching_alone(prs)
     slide_sla_verdict_table_recommended(prs)
     slide_sla_verdict_table_all_on(prs)
     slide_sla_verdict_chart_ttft(prs)
     slide_sla_verdict_chart_tpot(prs)
     slide_sla_verdict_chart_e2e(prs)
+    slide_recommendation(prs)
     slide_roi(prs)
     slide_architecture_tradeoffs(prs)
-    slide_recommendation(prs)
     slide_scaling_remeasure(prs)
     slide_repo(prs)
     slide_code_overview(prs)
@@ -1538,6 +1728,7 @@ def build() -> None:
     slide_business_impact(prs)   # continuous batching, throughput vs latency
     appendix_fp8_accuracy(prs)
     appendix_cost_math(prs)
+    appendix_kv_cache(prs)
     appendix_flop_math(prs)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)

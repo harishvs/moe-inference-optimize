@@ -1,0 +1,44 @@
+{
+  "results": [
+    {
+      "prefix_len": 128,
+      "suffix_len": 64,
+      "n_reuse": 5,
+      "cold_pct": 0.0,
+      "after_warm_pct": 0.0,
+      "after_reuse_pct": 0.0,
+      "delta_warm_pct": 0.0,
+      "delta_reuse_pct": 0.0
+    },
+    {
+      "prefix_len": 512,
+      "suffix_len": 64,
+      "n_reuse": 5,
+      "cold_pct": 0.0,
+      "after_warm_pct": 0.0,
+      "after_reuse_pct": 0.0,
+      "delta_warm_pct": 0.0,
+      "delta_reuse_pct": 0.0
+    },
+    {
+      "prefix_len": 1024,
+      "suffix_len": 64,
+      "n_reuse": 5,
+      "cold_pct": 0.0,
+      "after_warm_pct": 0.0,
+      "after_reuse_pct": 0.0,
+      "delta_warm_pct": 0.0,
+      "delta_reuse_pct": 0.0
+    },
+    {
+      "prefix_len": 2048,
+      "suffix_len": 64,
+      "n_reuse": 5,
+      "cold_pct": 0.0,
+      "after_warm_pct": 0.0,
+      "after_reuse_pct": 0.0,
+      "delta_warm_pct": 0.0,
+      "delta_reuse_pct": 0.0
+    }
+  ]
+}

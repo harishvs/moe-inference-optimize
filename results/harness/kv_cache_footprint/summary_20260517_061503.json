@@ -1,0 +1,124 @@
+{
+  "results": [
+    {
+      "input_len": 128,
+      "prefix_len": 64,
+      "suffix_len": 64,
+      "n_reuse": 5,
+      "cold": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 0.0,
+        "prefix_cache_hits": 0.0,
+        "prompt_tokens_cached": 0.0
+      },
+      "after_warm": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 128.0,
+        "prefix_cache_hits": 0.0,
+        "prompt_tokens_cached": 0.0
+      },
+      "after_reuse": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 766.0,
+        "prefix_cache_hits": 320.0,
+        "prompt_tokens_cached": 320.0
+      },
+      "kv_cache_pct_after_warm": 0.0,
+      "kv_cache_pct_after_reuse": 0.0,
+      "queries_on_reuse": 638.0,
+      "hits_on_reuse": 320.0,
+      "hit_rate_on_reuse": 0.5015673981191222,
+      "cached_tokens_added_on_warm": 0.0
+    },
+    {
+      "input_len": 512,
+      "prefix_len": 448,
+      "suffix_len": 64,
+      "n_reuse": 5,
+      "cold": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 766.0,
+        "prefix_cache_hits": 320.0,
+        "prompt_tokens_cached": 320.0
+      },
+      "after_warm": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 1278.0,
+        "prefix_cache_hits": 384.0,
+        "prompt_tokens_cached": 384.0
+      },
+      "after_reuse": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 3836.0,
+        "prefix_cache_hits": 2624.0,
+        "prompt_tokens_cached": 2624.0
+      },
+      "kv_cache_pct_after_warm": 0.0,
+      "kv_cache_pct_after_reuse": 0.0,
+      "queries_on_reuse": 2558.0,
+      "hits_on_reuse": 2240.0,
+      "hit_rate_on_reuse": 0.8756841282251759,
+      "cached_tokens_added_on_warm": 64.0
+    },
+    {
+      "input_len": 1024,
+      "prefix_len": 960,
+      "suffix_len": 64,
+      "n_reuse": 5,
+      "cold": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 3836.0,
+        "prefix_cache_hits": 2624.0,
+        "prompt_tokens_cached": 2624.0
+      },
+      "after_warm": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 4860.0,
+        "prefix_cache_hits": 3072.0,
+        "prompt_tokens_cached": 3072.0
+      },
+      "after_reuse": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 9978.0,
+        "prefix_cache_hits": 7872.0,
+        "prompt_tokens_cached": 7872.0
+      },
+      "kv_cache_pct_after_warm": 0.0,
+      "kv_cache_pct_after_reuse": 0.0,
+      "queries_on_reuse": 5118.0,
+      "hits_on_reuse": 4800.0,
+      "hit_rate_on_reuse": 0.9378663540445487,
+      "cached_tokens_added_on_warm": 448.0
+    },
+    {
+      "input_len": 1500,
+      "prefix_len": 1436,
+      "suffix_len": 64,
+      "n_reuse": 5,
+      "cold": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 9978.0,
+        "prefix_cache_hits": 7872.0,
+        "prompt_tokens_cached": 7872.0
+      },
+      "after_warm": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 11478.0,
+        "prefix_cache_hits": 8832.0,
+        "prompt_tokens_cached": 8832.0
+      },
+      "after_reuse": {
+        "kv_cache_usage_perc": 0.0,
+        "prefix_cache_queries": 18976.0,
+        "prefix_cache_hits": 15952.0,
+        "prompt_tokens_cached": 15952.0
+      },
+      "kv_cache_pct_after_warm": 0.0,
+      "kv_cache_pct_after_reuse": 0.0,
+      "queries_on_reuse": 7498.0,
+      "hits_on_reuse": 7120.0,
+      "hit_rate_on_reuse": 0.949586556415044,
+      "cached_tokens_added_on_warm": 960.0
+    }
+  ]
+}
