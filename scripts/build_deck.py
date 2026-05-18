@@ -1030,8 +1030,8 @@ def slide_architecture_tradeoffs(prs: Presentation) -> None:
          "Run eval suite before prod; bf16 fallback available"],
         ["Prefix caching",
          "30% TTFT cut on shared prompts (L=1500)",
-         "Cache miss = no benefit; memory overhead",
-         "Size KV cache to workload; monitor hit rate"],
+         "Cache miss = no benefit; footprint scales with prompt length (not user count when prefixes are shared)",
+         "Size KV cache to prompt length; monitor hit rate"],
         ["Tensor parallel (2 GPUs)",
          "14% TPOT gain at single-user load",
          "TTFT win is small at chat-app prompt sizes (L ≥ 512); concurrency behavior not measured",
@@ -1052,8 +1052,12 @@ def slide_architecture_tradeoffs(prs: Presentation) -> None:
         "tasks taking a measurable hit. The mitigation is to run the eval "
         "suite on the customer's actual workload before flipping the flag in "
         "production, and to keep bf16 as a fallback if anything regresses.\n\n"
-        "Prefix caching: only helps when prompts share prefixes. Sizing the "
-        "KV cache and monitoring hit rate keeps it honest in production.\n\n"
+        "Prefix caching: only helps when prompts share prefixes. Footprint "
+        "is per unique prefix (128 KiB / token), not per user — one shared "
+        "system prompt costs the same whether 1 or 10,000 users hit it. "
+        "What drives the cost is prompt length, and (in multi-tenant "
+        "setups) the number of distinct prefixes cached in parallel. Size "
+        "the KV cache to prompt length and monitor hit rate.\n\n"
         "Tensor parallel: I keep flagging this — at single-user batch=1 it "
         "doesn't move TTFT. The reason it's still worth it is TPOT and the "
         "doubled memory headroom for bigger batches. If someone uses it as a "
